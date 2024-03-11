@@ -30,8 +30,8 @@ vc_norm[upper.tri(vc_norm) == TRUE] <- sample(c(0.3, 0.4, 0.5), 10, replace=T)
 for (i in 1:4)
   for (j in (i+1):5)
     vc_norm[j, i] <- vc_norm[i, j]
-vc_norm[1,2] <- 0.7
-vc_norm[2,1] <- 0.7
+vc_norm[1,2] <- 0.6
+vc_norm[2,1] <- 0.6
 
 liver_norm <- rmvnorm(193, mean=rep(0, 5), sigma=vc_norm)
 animate_xy(liver_norm, axes = "off", 
@@ -51,7 +51,7 @@ vc_f <- vc_norm
 vc_f[1,2] <- 0.9
 vc_f[2,1] <- 0.9
 
-liver_f_means <- c(-0.3, 2.5, 0, 0, 0)
+liver_f_means <- c(-0.3, 1.5, 0, 0, 0)
 liver_f <- rmvnorm(267, mean=liver_f_means, sigma=vc_f)
 
 colnames(liver_f) <- colnames(liver_stats)[1:5]
@@ -64,8 +64,7 @@ write_csv(as.data.frame(vc_f), file="data/liver_f_vc.csv")
 # Try it out
 vc_norm <- read_csv("data/liver_norm_vc.csv")
 liver_f <- read_csv("data/liver_f.csv")
-library(tourr)
-animate_xy(liver_f, axes = "off", ellipse=vc_norm, ellsize=15)
+animate_xy(liver_f, axes = "off", ellipse=vc_norm, ellsize=3)
 animate_xy(liver_f, 
            guided_anomaly_tour(anomaly_index(),
              ellipse=vc_norm, ellsize=20), 
@@ -79,5 +78,6 @@ d <- d |>
   mutate(set = factor(set))
 
 animate_xy(d[,1:5], axes = "off", col=d$set)
+animate_xy(d[,1:5], guided_tour(lda_pp(d$set)), col=d$set)
 
 
