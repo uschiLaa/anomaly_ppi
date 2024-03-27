@@ -2,6 +2,7 @@
 library(mvtnorm)
 library(tidyverse)
 library(tourr)
+library(GGally)
 
 liver_stats <- tribble(
   ~ALT, ~AST, ~ALP, ~Albumin, ~Bilirubin, ~GGT, ~LD, ~PT, ~sex, ~stat,
@@ -25,43 +26,65 @@ liver_stats |>
 
 # Using standardised measurements
 set.seed(1257)
-norm_vc <- diag(1, 5, 5)
-norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 10, replace=T)
-for (i in 1:4)
-  for (j in (i+1):5)
+norm_vc <- diag(1, 4, 4)
+norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
+for (i in 1:3)
+  for (j in (i+1):4)
     norm_vc[j, i] <- norm_vc[i, j]
 norm_vc[1,2] <- 0.8
 norm_vc[2,1] <- 0.8
 
-liver_norm <- rmvnorm(193, mean=rep(0, 5), sigma=as.matrix(norm_vc))
+liver_norm <- rmvnorm(193, mean=rep(0, 4), sigma=as.matrix(norm_vc))
 animate_xy(liver_norm, axes = "off", 
            ellipse=as.matrix(norm_vc))
+animate_xy(liver_norm, axes = "off", 
+           ellipse=as.matrix(norm_vc), ellc=qchisq(0.99, 4))
 animate_xy(liver_norm, 
            guided_anomaly_tour(anomaly_index(),
-             ellipse=as.matrix(norm_vc)), 
-           ellipse=as.matrix(norm_vc),
+             ellipse=as.matrix(norm_vc), ellc=qchisq(0.99, 4)), 
+           ellipse=as.matrix(norm_vc), ellc=qchisq(0.99, 4),
            axes="off")
-colnames(liver_norm) <- colnames(liver_stats)[1:5]
+colnames(liver_norm) <- colnames(liver_stats)[c(1,2,4,5)]
 write_csv(as.data.frame(liver_norm), file="data/liver_norm.csv")
-colnames(norm_vc) <- colnames(liver_stats)[1:5]
+colnames(norm_vc) <- colnames(liver_stats)[c(1,2,4,5)]
 write_csv(as.data.frame(norm_vc), file="data/liver_norm_vc.csv")
 
 vc_f <- norm_vc
-vc_f[1,2] <- 0.5
-vc_f[2,1] <- 0.5
+vc_f[1,2] <- 0.1
+vc_f[2,1] <- 0.1
+vc_f <- vc_f/4
 
-liver_f_means <- c(-0.3, 0.5, 0, 0, 0)
-liver_f <- rmvnorm(267, mean=liver_f_means, sigma=as.matrix(vc_f))
+liver_f_means <- c(-0.3, 0.5, -0.1, 0.1)
+set.seed(523)
+liver_f <- rmvnorm(54, mean=liver_f_means, sigma=as.matrix(vc_f))
 
-colnames(liver_f) <- colnames(liver_stats)[1:5]
-write_csv(as.data.frame(liver_f), file="data/liver_f.csv")
-
-colnames(vc_f) <- colnames(liver_stats)[1:5]
-write_csv(as.data.frame(vc_f), file="data/liver_f_vc.csv")
+x <- rbind(liver_f, liver_norm)
+x <- data.frame(x)
+x$type <- factor(c(rep("f", 54), rep("norm", 193)))
+ggscatmat(x, columns = 1:4, color="type")
 
 norm_mu <- liver_f_means*(-1)
-norm_mu <- matrix(norm_mu, ncol=5)
-colnames(norm_mu) <- colnames(liver_stats)[1:5]
+norm_mu <- matrix(norm_mu, ncol=4)
+
+animate_xy(liver_f, axes = "off", ellipse=as.matrix(norm_vc), 
+           ellc = qchisq(0.99, 4), ellmu = t(norm_mu), half_range=6)
+animate_xy(liver_f, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(norm_vc), 
+                               ellc = qchisq(0.99, 4),
+                               ellmu = t(norm_mu)), 
+           start = basis_random(4, 2),
+           ellipse=as.matrix(norm_vc), 
+           ellc = qchisq(0.99, 4),
+           ellmu = t(norm_mu), 
+           axes="off", half_range=6)
+colnames(liver_f) <- colnames(liver_stats)[c(1,2,4,5)]
+write_csv(as.data.frame(liver_f), file="data/liver_f.csv")
+
+colnames(vc_f) <- colnames(liver_stats)[c(1,2,4,5)]
+write_csv(as.data.frame(vc_f), file="data/liver_f_vc.csv")
+
+colnames(norm_mu) <- colnames(liver_stats)[c(1,2,4,5)]
 write_csv(as.data.frame(norm_mu), file="data/liver_norm_means.csv")
 
 # Try it out
