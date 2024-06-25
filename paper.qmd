@@ -1,0 +1,30 @@
+---
+title: "Are you normal? A new projection pursuit index to assess a sample against a multivariate null distribution"
+author: "Annalisa Calvi, Ursula Laa, Dianne Cook"
+format:
+  jasa-pdf:
+    keep-tex: true    
+---
+
+## Introduction
+
+Linear projections are useful in many aspects of statistical analysis of multivariate data, and especially useful for visualising the data. A linear projection provides a dimension reduction while maintaining interpretability. For example, a biplot (REF) shows the structure creating the maximum variance in the data, and also visualizing the projection matrix to learn which variables contribute to it. We might find clusters of outliers that were hiding in high dimensions.
+
+More generally, projection pursuit (REF) defines a quantitative criterion for the interestingness of a projection (a projection pursuit index), and searches the space of possible projections for the most interesting one to display. We can also define sequences of interpolated linear projections to better understand a multivariate distribution. Animating a randomly selected interpolated sequence of linear projections is called a grand tour (REF). The combination of these two approaches would then use a projection pursuit index to select interesting projections, but display them via an interpolated path to provide context. This is called a guided tour (REF).
+
+The question is whether we can use these techniques to assess new data samples in the context of an established normal, such as a specific multivariate normal distribution. In physics, the normal distribution may describe experimental results, or a global fit for a selected model, and we might want to compare to a set of other models. In medical applications, the normal distribution might summarize historic data of a healthy population and we compare it to samples from new patients. In outlier detection we might use robust measures to define the normal distribution and look for anomalies. 
+
+This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution. It is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and example use is illustrated in @sec-examples. 
+
+## Background {#sec-background}
+
+### Projection pursuit
+
+### Tours for visualisation
+
+## Anomaly index {#sec-anomaly-index}
+
+## Examples {#sec-examples}
+
+## Conclusion
+

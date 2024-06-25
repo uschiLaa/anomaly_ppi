@@ -57,11 +57,12 @@ vc_f <- vc_f/4
 liver_f_means <- c(-0.3, 0.5, -0.1, 0.1)
 set.seed(523)
 liver_f <- rmvnorm(54, mean=liver_f_means, sigma=as.matrix(vc_f))
+colnames(liver_f) <- colnames(liver_stats)[c(1,2,4,5)]
 
 x <- rbind(liver_f, liver_norm)
 x <- data.frame(x)
 x$type <- factor(c(rep("f", 54), rep("norm", 193)))
-ggscatmat(x, columns = 1:4, color="type")
+ggscatmat(x, columns = 1:4, color="type", alpha=0.5)
 
 norm_mu <- liver_f_means*(-1)
 norm_mu <- matrix(norm_mu, ncol=4)
@@ -77,8 +78,7 @@ animate_xy(liver_f,
            ellipse=as.matrix(norm_vc), 
            ellc = qchisq(0.99, 4),
            ellmu = t(norm_mu), 
-           axes="off", half_range=6)
-colnames(liver_f) <- colnames(liver_stats)[c(1,2,4,5)]
+           axes="bottomleft", half_range=6)
 write_csv(as.data.frame(liver_f), file="data/liver_f.csv")
 
 colnames(vc_f) <- colnames(liver_stats)[c(1,2,4,5)]

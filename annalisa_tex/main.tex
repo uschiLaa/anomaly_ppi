@@ -1,0 +1,397 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath, geometry, url, amsfonts}
+%\geometry{margin=2.5cm}
+%\title{High Dimensional Data Visualisation: Ellipsoid projections}
+\title{Are you normal? A new projection pursuit index to assess a sample against a multivariate null distribution.}
+\author{}
+
+\renewcommand{\v}[1]{\boldsymbol{#1}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\begin{itemize}
+    \item Projection pursuit
+    \item Elliptical distributions
+    \item Explanations of application areas
+\end{itemize}
+
+%Representing data collected with multiple parameters, with applications to physics.
+
+\section{Projecting a pD ellipse into 2D}
+
+Notation:
+
+\begin{itemize}
+\item $A_{p\times p}$ is the variance-covariance representing the normal population. 
+\item $\mu_{p\times 1}$ vector of means of the normal population
+\item $P_{p\times 2}$ is the orthonormal basis on which the data is projected.
+\item $X_{n\times p}$ data matrix, let $x$ represent a row, or abstractly a random $p$=dimensional vector. 
+\item Equation of $p$D ellipse is $(\v{x}-\mu)^\top A^{-1} (\v{x}-\mu) = c^2$.
+\item Equation of projected ellipse is $(\v{x}-\mu)^\top (P^\top AP)^{-1}(\v{x}-\mu) = c^2$. 
+\item $BB^\top = (P^\top AP)^{-1}$, so $B=(P^\top AP)^{-1/2}$
+\item The projected data is $\v{y}=P\v{x}$
+\item $B^{-1}\v{y}$ are points that lie of the 2D ellipse
+\item $c^2$ is a quantile from a $\chi^2_p$
+\end{itemize}
+
+
+% Potential reference: https://doi.org/10.1214/18-AOS1699
+
+\section{Projection matrix onto a plane spanned by two vectors} \label{sec:orthonormal}
+
+For orthonormal $p$-dimensional vectors $\v{v_1}$ and $\v{v_2}$, and a $p$-dimensional vector $\v{x}$, the projection of $\v{x}$ onto the plane spanned by $\v{v_1}$ and $\v{v_2}$ is given by:
+\begin{equation}
+    (\v{x}\cdot\v{v_1})\v{v_1}+(\v{x}\cdot\v{v_2})\v{v_2}
+\end{equation}
+
+Now, if we consider $\v{v_1}$ and $\v{v_2}$ to be our new basis vectors, we can write the projection with two coordinates as
+\begin{align}
+\begin{bmatrix}
+    \text{---} & \v{v_1} & \text{---}  \\
+    \text{---} & \v{v_2} & \text{---}
+\end{bmatrix}
+\v{x} = P \v{x}
+\end{align}
+where $P$ is the $2 \times p$ projection matrix onto the plane. 
+
+If we are given two vectors $\v{u}$ and $\v{v}$ that are not orthonormal, we can still construct an orthonormal projection matrix onto the plane they span. Let $\v{m} = (\v{\hat{u}} + \v{\hat{v}})/|\v{\hat{u}} + \v{\hat{v}}|$ be the unit vector bisecting the angle between $\v{u}$ and $\v{v}$. Then $\v{p} = (\v{\hat{u}} - \v{\hat{v}})/|\v{\hat{u}} - \v{\hat{v}}|$ is perpendicular to $\v{m}$. Setting
+
+\begin{equation}
+P := \frac{1}{\sqrt{2}}
+\begin{bmatrix}
+    \text{---} & \v{m} + \v{p} & \text{---}  \\
+    \text{---} & \v{m} - \v{p} & \text{---}
+\end{bmatrix},
+\end{equation}
+we have an orthonormalised projection matrix spanning the same plane as $\v{u}$ and $\v{v}$.
+
+\section{Finding the projection of a hyperellipsoid onto a plane}
+
+Consider an ellipsoid of $p$-dimensional points $\v{x}$ satisfying $\v{x}^T A \v{x} = c^2$, where $A$ is a positive definite $p \times p$ matrix and $c^2$ is a constant dependent on the confidence interval. If the ellipsoid is constructed from a covariance matrix, $A$ is the \emph{inverse} of the given covariance matrix. Let $L$ be the plane spanned by orthonormal vectors $\v{u}$ and $\v{v}$. We aim to project this ellipsoid onto $L$. Let
+\begin{align}
+P:=
+\begin{bmatrix}
+    \text{---} & \v{u} & \text{---}  \\
+    \text{---} & \v{v} & \text{---}
+\end{bmatrix}
+\end{align}
+be the $2 \times p$ projection matrix onto $L$.
+
+Let $f(\v{x}) = \v{x}^T A \v{x}$. We want to find $\v{x}$ for which $\nabla f (\v{x})$ is parallel to $L$. These points, when projected onto $L$, will form the boundary of the projected ellipse.
+
+Since $\nabla f(\v{x}) = 2A\v{x}$, we must have $A\v{x}$ parallel to $L$. That is, there exists some $2 \times 1$ vector $\v{s} = (s_1, s_2)$ such that $A \v{x} = s_1\v{u} + s_2\v{v} = P^T \v{s}$. We can set $\v{x} = A^{-1}P^T\v{s}$. For $\v{x}$ to be a point on the ellipsoid, we require that $c^2 = \v{x}^T A \v{x}$; substituting out $\v{x}$ gives
+\begin{align}
+    c^2 =& \v{x}^T A \v{x}\\
+    =& \v{s}^T P (A^{-1})^T A A^{-1} P^T \v{s}\\
+    =& \v{s}^T P A^{-1} P^T \v{s}
+\end{align}
+where $(A^{-1})^T = A^{-1}$ by the symmetry of $A$. We see from this equation that $\v{s}$ lies on an ellipse with $2 \times 2$ matrix $P A^{-1} P^T$. 
+
+Now, let $\bar{\v{x}} := P \v{x}$ be the projection of $\v{x}$ onto $L$. For $\bar{\v{x}}$ on the boundary of the projected ellipse, we have $\bar{\v{x}} = P \v{x} = P A^{-1} P^T \v{s}$. Then, we can isolate $\v{s} = (P A^{-1} P^T)^{-1} \bar{\v{x}}$, and, substituting out $\v{s}$, find
+\begin{align}
+    c^2 =& \v{s}^T P A^{-1} P^T \v{s}\\
+    =& \bar{\v{x}}^T ((P A^{-1} P^T)^{-1})^T P A^{-1} P^T (P A^{-1} P^T)^{-1} \bar{\v{x}}\\
+    =& \bar{\v{x}}^T (P A^{-1} P^T)^{-1} \bar{\v{x}}.
+\end{align}
+Again, $((P A^{-1} P^T)^{-1})^T = (P A^{-1} P^T)^{-1}$ by symmetry of $A$. 
+
+Therefore, the projection of our $p$-dimensional ellipsoid onto $L$ is the ellipse with equation $\bar{\v{x}}^T (P A^{-1} P^T)^{-1} \bar{\v{x}} = c^2$.
+
+In order to plot this ellipse, it can be useful to construct a sequence of points on its boundary. As $P A^{-1}P^T$ is positive definite, it can be deconstructed as $P A^{-1}P^T = B B^T$. Then our ellipse equation becomes
+\begin{align*}
+    c^2 &= \bar{\v{x}}^T (BB^T)^{-1} \bar{\v{x}}\\
+    &= (B^{-1}\bar{\v{x}})^T (B^{-1}\bar{\v{x}});
+\end{align*}
+that is, the points $B^{-1}\bar{\v{x}}$ lie on the circle with radius $c$ centred at the origin. As that circle is parameterised by $(c\cos(t), c\sin(t)),\; t \in [0, 2\pi)$, we can parameterise $\bar{\v{x}}$ as
+\begin{equation}
+    \bar{\v{x}} = cB
+    \begin{bmatrix}
+        \cos(t)\\
+        \sin(t)
+    \end{bmatrix} + P\v{\mu}_E, \; t \in [0, 2\pi)
+\end{equation}
+where $\v{\mu}_E$ is the $p$-dimensional center of the hyperellipsoid. Plotting 50--100 such points gives a good resolution for the shape without taking too long to render.
+
+The constant $c$ depends on the confidence interval that the ellipse represents. In the application, users can choose to show projections of the hyperellipsoids corresponding to 1 s.d., 2 s.d., ..., 6 s.d. Let $\chi(t, p)$ denote the percentage point function of the chi-square distribution, with probability $t$ and $p$ degrees of freedom. Let $\Phi(z)$ be the cumulative distribution function of the standard, univariate normal distribution. For $p$-dimensional data, the ellipsoid corresponding to $z$ standard deviations has
+\begin{equation} \label{ztoc}
+c^2 = \chi(2\Phi(z) -1, p).
+\end{equation}
+In $p$-dimensional space, we should then expect to have 68\% of the data within 1 s.d., 95\% of the data within 2 s.d., etc., matching a univariate normal distribution. After projection, however, more points may end up inside the ellipse. The only guarantee of the projected ellipse is if a point is \emph{outside} an ellipse in the 2-dimensional projection, then the point is outside that ellipsoid in $p$-dimensional space. The converse is generally not true, but this is still an improvement on a slice ellipse, which cannot make either guarantee.
+
+\section{Derivation using tour notation}
+\subsection{Notation}
+
+The main difference is that we consider row-vectors such $x$ or $mu$ are considered rows of an $(n\times p)$ data matrix, i.e. they are $(1\times p)$ which is needed to work directly with projections as defined in the tour.
+
+\begin{itemize}
+\item $A_{p\times d}$ is the orthonormal basis defining the projection plane, for us $d=2$
+\item $\mu_{1\times p}$ vector of means of the normal population
+\item $\Sigma_{p\times p}$ is the variance-covariance matrix for the normal population
+\item $X_{n\times p}$ data matrix, let $x$ represent a row, or abstractly a random $p$=dimensional vector, but note that in our notation $x$ is $(1\times p)$ 
+\end{itemize}
+
+Our starting point is the $p$-dimensional ellipsoid defined by the variance-covariance matrix. For a selected size of the ellipsoid this is defined via the precision matrix, for points $x$ on the surface we have
+
+\begin{equation}
+    (x-\mu)\Sigma^{-1}(x-\mu)^T = c^2
+\end{equation}
+
+where $c$ controls the size of the ellipsoid, in the special case of a sphere $c$ would be the radius of the sphere. In our case of an ellipsoid defined via the variance-covariance matrix $c$ measures the size with scale determined by the Malahanobis distance.
+
+\subsection{Projection of the ellipse}
+
+The projection of the ellipsoid onto the $d=2$-dimensional plane defined via $A$ is defining an ellipse. To find the outline of this ellipse consider that the projection should capture where the tangent hyperplane on the ellipsoid surface is normal on the projection plane. This is the point along the surface curvature where the direction is changing. This is equivalent to requiring that the gradient of the ellipsoid equation should be parallel to the projection plane. For simplicity here we assume $\mu=0$.
+
+We therefore are interested in the gradient of the function
+\begin{equation}
+    f(x) = x \Sigma^{-1} x^T
+\end{equation}
+
+which is 
+
+\begin{equation}
+    \nabla f(x) = 2 x \Sigma^{-1}
+\end{equation}
+
+and since we require that this is parallel to the plane defined via $A$ it means that we can express the gradient in this basis:
+
+\begin{equation}
+    x \Sigma^{-1} = s A^T
+\end{equation}
+
+therefore we have
+
+\begin{equation}
+    x = s A^T \Sigma
+\end{equation}
+
+This is defining the second condition for $x$ to define a point on the ellipse. The first condition was the requirement to be on the ellipsoid surface. Putting both conditions together by replacing $x$ we get
+
+\begin{equation}
+    s A^T \Sigma \Sigma^{-1} \Sigma^T A s^T = c^2
+\end{equation}
+
+and using $\Sigma^T = \Sigma$ this gives
+
+\begin{equation}
+    s A^T \Sigma A s^T = c^2
+        \label{eq:ells}
+
+\end{equation}
+
+Since $s$ should be defined via a projection $y$ of our $p$-dimensional $x$ we rewrite it in those terms. From
+
+\begin{equation}
+    y = x A = s A^T \Sigma A
+\end{equation}
+
+we obtain
+
+\begin{equation}
+    s = y (A^T \Sigma A)^{-1}
+\end{equation}
+
+and substitute this into Eq.~\ref{eq:ells} to find
+
+\begin{equation}
+    y (A^T \Sigma A)^{-1} A^T \Sigma A ((A^T \Sigma A)^{-1})^T y^T = c^2
+\end{equation}
+
+again we can use the symmetry of $A$ when simplifying the equation, and we arrive at our final equation for the ellipse outline
+
+\begin{equation}
+    y (A^T \Sigma A)^{-1} y^T = c^2
+    \label{eq:elly}
+\end{equation}
+
+\subsection{Drawing the ellipse}
+
+XXX not done, need to check this still
+
+To draw the projected ellipse we use the decomposition of a real-valued positive definite matrix as
+
+\begin{equation}
+    M = (A^T \Sigma A)^{-1} = B B^T
+\end{equation}
+
+where we can define $B$ as the square-root of $M$. This can be computed via the eigendecomposition of $M$, and taking the square-root of the eigenvalues. Using the decomposition we can rewrite equation (\ref{eq:elly}) as
+
+\begin{equation}
+    y B B^T y^T = c^2
+\end{equation}
+
+therefore $y B$ defines a circle of radius $c$. Thus to find points on the ellipse we first sample points on a circle and then use $B$ to find the corresponding points $y$.
+
+
+
+
+\section{A projection pursuit index using the projected ellipse}
+A shortfall of this orthogonal projection is that some interesting points, that are many standard deviations from $\v{\mu}_E$ in $p$-dimensional space, can be projected inside the ellipse and not stand out. The proposed projection pursuit index aims to remedy this. Let $W$ be a matrix where each column is an 'interesting' $p$-dimensional point $\v{w}$. Let $F$ be a function on a projection matrix $P$, with parameter $W$, such that:
+\begin{equation} \label{ppi}
+    F(P; W) = \sum_{\v{w}\in W} (\v{w} - \v{\mu}_E)^T P^T (P A^{-1} P^T)^{-1} P(\v{w} - \v{\mu}_E)
+\end{equation}
+Notice that $P(\v{w} - \v{\mu}_E)$ is the 2D projection of the vector pointing from the centre of the ellipsoid to $\v{w}$. Furthermore, $(P A^{-1} P^T)^{-1}$ is the 2D projection of the hyperellipsoid. That is, the summand of (\ref{ppi}) gives the squared Mahalanobis distance of $P\v{w}$ from $P\v{\mu}_E$, with respect to the shape of the \emph{projected} ellipse. The 'optimal' projection, for a given $W$, is the matrix $P$ which maximises $F(P; W)$. A way of numerically finding $P$ to do this is detailed in the appendix.
+
+One way of selecting an interesting $W$ is to focus on outliers. Specifically, $W$ can be chosen as the set of points that are more than $z$ standard deviations from $\v{\mu}_E$ in $p$-dimensional space. In the python application, the value of $z$ can be chosen by the user. 
+
+To make these changes more efficient, the data is sorted beforehand in order of increasing elliptical distance from $\v{\mu}_E$; we also keep a list of these elliptical distances. When the user selects some $z$, we calculate a cutoff elliptical distance $c$ from $z$ by equation (\ref{ztoc}). We can binary search our list of elliptical distances for the index of this $c$. Then we get $W$ by truncating our sorted data matrix at this index.
+
+Alternatively, the user can select $W$ using the lasso tool, specifying $W$ to be the set of points whose projects land in the selected region.
+
+\section{Manual tour functionality}
+We have in our projection matrix $p$ columns, where the $i$-th column is the 2D projection of the $i$-th basis vector of our high-dimensional space. When we drag the $i$-th basis vector to a position $(A, B)$ in 2D space, we want to construct a new projection matrix with the $i$-th column equal to $(A, B)$, or as close to it as possible. 
+
+Firstly, as $(A, B)$ is the orthogonal projection of a unit vector, we must have $|(A, B)| \le 1$. We normalise this vector if the user drags further out. 
+
+Let $\v{u}$ and $\v{v}$ be the first and second rows of our new projection matrix $P$, so that the $i$-th component of $\v{u}$ is $A$ and the $i$-th component of $\v{v}$ is $B$. Let $\v{a}$ and $\v{b}$ be $p-1$-dimensional vectors, obtained by removing the $i$-th component from $\v{u}$ and $\v{v}$ respectively. To have $\v{u}$ and $\v{v}$ perpendicular we require:
+\[
+0 = \v{u}\cdot \v{v} = \v{a} \cdot \v{b} + AB
+\]
+so that $\v{a} \cdot \v{b} = -AB$. Then, to have $\v{u}$ and $\v{v}$ normal, we require $|\v{a}| = \sqrt{1 - A^2}$, and $|\v{b}| = \sqrt{1 - B^2}$. Let $\theta$ be the angle between $\v{a}$ and $\v{b}$. Combining our previous requirements, we get 
+\begin{equation} \label{cos}
+\cos(\theta) = \frac{\v{a}\cdot \v{b}}{|\v{a}||\v{b}|} = \frac{-AB}{\sqrt{(1 - A^2)(1 - B^2)}}
+\end{equation}
+We can then construct $\v{a}$ and $\v{b}$ to be as close to the previous projection as possible, using their previous values $\v{a^*}$ and $\v{b^*}$. We set $\v{p}$ to be the normal vector in the direction of $\v{a^*}+\v{b^*}$, and $\v{m}$ to be the normal vector in the direction of $\v{a^*} - \v{b^*}$. We can find $\cos(\theta/2)$ and $\sin(\theta/2)$ using:
+\begin{align*}
+    \cos(\theta/2) = \sqrt{\frac{1 + \cos(\theta)}{2}}; & & \sin(\theta/2) = \sqrt{\frac{1 - \cos(\theta)}{2}}
+\end{align*}
+
+Then, set
+\begin{align*}
+    \v{a} = \sqrt{1 - A^2}(\cos(\theta/2) \v{p} + \sin(\theta/2) \v{m})\\
+    \v{b} = \sqrt{1 - B^2}(\cos(\theta/2) \v{p} - \sin(\theta/2) \v{m})
+\end{align*}
+It is then trivial to check, using (\ref{cos}), the orthonormality of $\v{p}$ and $\v{m}$, and the identity $\cos(\theta) = \cos^2(\theta/2) - \sin^2(\theta/2)$, that $\v{a} \cdot \v{b} = -AB$, $|\v{a}| = \sqrt{1 - A^2}$, and $|\v{b}| = \sqrt{1 - B^2}$. The corresponding vectors $\v{u}$ and $\v{v}$ can then be stacked back into a new projection matrix.
+
+\textbf{Error handling.} This method struggles when $\v{a^*} + \v{b^*}$ or $\v{a^*} - \v{b^*}$ turns out to be the zero vector. This is a frequent issue, occurring whenever the axes not being dragged are projected onto one line. In this case, the code sets the $i$-th components of $\v{u}$ and $\v{v}$ to $A$ and $B$ respectively, then reverts to the orthonormalisation method detailed in section \ref{sec:orthonormal}.
+
+
+\section{Appendix: Numerically optimising the projection pursuit index}
+Let $C = A^{-1}$ be the covariance matrix of the data. For brevity we will suppose our dataset has been centred at the origin. As the matrix of the projected ellipse is $(P C P^T)^{-1}$, we need to find $P$ to maximise
+\[
+\sum_{\v{w}\in W} \v{w}^T P^T (P C P^T)^{-1} P\v{w}.
+\]
+Let the rows of $P$ be $\v{u}$ and $\v{v}$. Suppose $W$ has $p$ rows with $m$ columns, corresponding to $m$ data points in $p$ dimensions. We need a multivariate function $f$ to maximise. Define $f: \mathbb{R}^{2n} \to \mathbb{R}$ as:
+\begin{align*}
+    f(\v{u}, \v{v}) :&= \sum_{\v{w}\in W} \v{w}^T
+    \begin{bmatrix}
+        \vert & \vert \\
+        \v{u} & \v{v}  \\
+        \vert & \vert
+    \end{bmatrix}
+    \left(
+    \begin{bmatrix}
+        \text{---} & \v{u} & \text{---}  \\
+        \text{---} & \v{v} & \text{---}
+    \end{bmatrix}
+    C
+    \begin{bmatrix}
+        \vert & \vert \\
+        \v{u} & \v{v}  \\
+        \vert & \vert
+    \end{bmatrix}
+    \right)^{-1} 
+    \begin{bmatrix}
+        \text{---} & \v{u} & \text{---}  \\
+        \text{---} & \v{v} & \text{---}
+    \end{bmatrix} 
+    \v{w} \\
+    &= 
+    \sum_{\v{w}\in W} \v{w}^T
+    \begin{bmatrix}
+        \v{u}\cdot\v{w} & \v{v}\cdot\v{w}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \v{u}^T C \v{u} & \v{u}^T C \v{v}\\
+        \v{v}^T C \v{u} & \v{v}^T C \v{v}
+    \end{bmatrix}
+    ^{-1} 
+    \begin{bmatrix}
+        \v{u}\cdot\v{w}  \\
+        \v{v}\cdot\v{w}
+    \end{bmatrix} 
+    \v{w}\\
+    &=
+    \sum_{\v{w}\in W} \frac{
+    \begin{bmatrix}
+        \v{u}\cdot\v{w} & \v{v}\cdot\v{w}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \v{v}^T C \v{v} & -\v{u}^T C \v{v}\\
+        -\v{v}^T C \v{u} & \v{u}^T C \v{u}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \v{u}\cdot\v{w}  \\
+        \v{v}\cdot\v{w}
+    \end{bmatrix} 
+    }
+    {(\v{u}^T C \v{u})(\v{v}^T C \v{v}) - (\v{u}^T C \v{v})^2}\\
+    &=
+    \sum_{\v{w}\in W} \frac{
+    (\v{u}^TC\v{u})(\v{v}\cdot\v{w})^2 
+    - 2 (\v{u}^TC\v{v})(\v{u}\cdot\v{w})(\v{v}\cdot\v{w})
+    + (\v{v}^TC\v{v})(\v{u}\cdot\v{w})^2 
+    }
+    {(\v{u}^T C \v{u})(\v{v}^T C \v{v}) - (\v{u}^T C \v{v})^2}
+\end{align*}
+With $\odot$ denoting element-wise multiplication, let $\v{g}: \mathbb{R}^{2n} \to \mathbb{R}^m$ be the function
+\[
+\v{g}(\v{u}, \v{v}) := (\v{u}^TC\v{u})(\v{v}^TW\odot\v{v}^TW)
+    - 2 (\v{u}^TC\v{v})(\v{u}^TW\odot\v{v}^TW)
+    + (\v{v}^TC\v{v})(\v{u}^TW\odot\v{u}^TW)
+\]
+and let $h: \mathbb{R}^{2n} \to \mathbb{R}$ be
+\[
+h(\v{u}, \v{v}) := (\v{u}^T C \v{u})(\v{v}^T C \v{v}) - (\v{u}^T C \v{v})^2.
+\]
+With $\v{s}$ as the $1 \times m$ summation vector (vector of ones), we have $f = \v{g}\v{s}/h$. Then the vector $(d\v{u}, d\v{v})$ giving the direction of the steepest increase of $f$ is
+\begin{align*}
+\nabla f(\v{u}, \v{v}) &= \left(f_{\v{u}}(\v{u}, \v{v}), f_{\v{v}}(\v{u}, \v{v})\right)\\
+    &= \left(f_{\v{u}}(\v{u}, \v{v}), f_{\v{u}}(\v{v}, \v{u})\right) \text{\;\; by symmetry of $f$,}\\
+    &= \left(
+        \frac{h(\v{u}, \v{v})\v{g}_{\v{u}}(\v{u}, \v{v})\v{s} - \v{g}(\v{u}, \v{v}) \v{s} h_{\v{u}}(\v{u}, \v{v})}{(h(\v{u}, \v{v}))^2}, 
+        \frac{h(\v{u}, \v{v})\v{g}_{\v{u}}(\v{v}, \v{u})\v{s} - \v{g}(\v{u}, \v{v}) \v{s} h_{\v{u}}(\v{v}, \v{u})}{(h(\v{u}, \v{v}))^2}
+    \right).
+\end{align*}
+Differentiating, we calculate $\v{g}_{\v{u}}: \mathbb{R}^{2n} \to \mathbb{R}^{n \times m}$ to be
+%2 * (v @ C @ v.T) * (u @ W) * W - 2*np.outer(C @ v, (u @ W)*(v @ W)) - 2*(u @ C @ v.T) * (v @ W) * W + 2 * np.outer(C @ u, (v @ W)**2)
+\[
+\v{g}_{\v{u}} (\v{u}, \v{v}) = 2(\v{v}^T C \v{v}) (\v{u}^TW)\odot W - 2 C\v{v} \otimes (\v{u}^TW \odot \v{v}^TW)
+ - 2(\v{u}^T C \v{v}) (\v{v}^T W) \odot W + 2 C\v{u} \otimes (\v{v}^TW \odot \v{v}^TW)
+\]
+and have $h_{\v{u}}: \mathbb{R}^{2n} \to \mathbb{R}^{n}$ given by:
+%2*(v @ C @ v.T)*(C @ u.T) - 2*(u @ C @ v.T)*(C @ v.T)
+\[
+h_{\v{u}}(\v{u}, \v{v}) = 2(\v{v}^T C \v{v}) C \v{u} - 2(\v{u}^T C \v{v}) C \v{v}.
+\]
+This gives us the means to calculate $\nabla f(\v{u}, \v{v})$. From starting values of $\v{u}$ and $\v{v}$, the optimiser enters a loop; it calculates $\nabla f$, scales it down to a size \texttt{step} (default 0.01), increments $\v{u}$ and $\v{v}$ by this vector, re-orthonormalises them, and recalculates $f$, keeping track of the increase $\Delta f$. When $\Delta f$ falls below a given \texttt{tol} (default 0.00001), we exit the loop and return $\v{u}$ and $\v{v}$.
+
+\textbf{Finding the starting values.}
+I wanted this algorithm to be deterministic, and independent of the order of the dimensions in the input file. The code attempts to start with a significant $\v{u}$ and $\v{v}$. It is possible to algebraically find a projection matrix $P$ to maximise:
+
+\[
+\sum_{\v{w}\in W} \v{w}^T P^T P A P^T P\v{w}.
+\]
+As $A$ is a positive definite matrix, it has a Cholesky decomposition $A = BB^T$. Substituting this in, we are maximising
+\begin{align*}
+&\sum_{\v{w}\in W} \v{w}^T P^T P B B^T P^T P\v{w}\\
+=& \sum_{\v{w}\in W} |B^T P^T P\v{w}|^2
+\end{align*}
+Let $T: = B^{-1}W$, with columns $\v{t} = B^{-1}\v{w}$. 
+Let $K := PB$ be a $2 \times n$ projection matrix, so that $B^T P^T P \v{w} = B^T P^T P B \v{t} = K^T K \v{t}$. Now we aim to find $K$ to maximise 
+\begin{align*}
+\sum_{\v{t}\in T} |K^T K\v{t}|^2.
+\end{align*}
+That is, $K$ is the best fitted plane to $T$, or equivalently the best \emph{rank 2 approximation}. The method for finding this is well-documented.
+First, we modify $T$, setting $\hat{T}= (T - TS/m)^T$, where $S$ is the $m \times m$ matrix of ones. That is, $\hat{T}$ is the translation of $T$ to be centred at the origin.
+
+Now we can calculate the singular value decomposition $\bar{T} = U \Sigma V^T$, where $U$ is $m \times m$ orthonormal, $\Sigma$ is $m\times n$ diagonal with entries decreasing along the diagonal, and $V$ is $n \times n$ orthonormal. Then the first two rows of $V^T$ give the best rank-2 approximation to $\bar{T}$ (see \url{https://www.cs.cmu.edu/~avrim/598/chap3only.pdf}); that is, they give the plane of best fit. These rows are already orthonormal, so we can set $K = V^T[:2]$. 
+
+Having found $K$, we can set $P = K B^{-1}$. We orthonormalise the rows of $P$ to get our initial $\v{u}$ and $\v{v}$ and start our numerical optimising process.
+
+
+\end{document}
