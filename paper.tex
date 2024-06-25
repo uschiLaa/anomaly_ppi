@@ -378,6 +378,16 @@ where by default
 \(W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T > c^2\}\),
 is the set of observations outside the \pD{} ellipsoid.
 
+\subsection{Additional considerations}\label{additional-considerations}
+
+If the observations in \(W\) are primarily departing from the normal
+range in the same direction, the index will be expected to perform well
+in finding this average direction. However, if the observations have
+very different departures from the norm, it may be useful to break them
+into groups, and separately optimize on these subsets. One could
+consider clustering these observations using angular distance to find
+groups of observations that have similar directions of departure.
+
 \section{Implementation}\label{implementation}
 
 This is implemented in the \texttt{tourr} (REF) package, where the
@@ -435,8 +445,8 @@ variance-covariance matrix.
 \end{minipage}%
 
 \caption{\label{fig-anomaly}Two projections of simulated example data
-corresponding to the sample code: (a) Random projection where sample is
-inside the 2-D ellipse, (b) Optimal projection from index, showing most
+corresponding to the sample code: (a) random projection where sample is
+inside the 2-D ellipse, (b) optimal projection from index, showing most
 of the sample outside. A red cross indicates that the point is outside
 the p-D ellipse. The optimal projection uses mostly variables
 \(x_4, x_5\), which is expected because these are the two directions
@@ -445,6 +455,12 @@ where the sample most differs from the norm.}
 \end{figure}%
 
 \section{Examples}\label{sec-examples}
+
+\subsection{Medical patients}\label{medical-patients}
+
+\subsection{Robust statistics}\label{robust-statistics}
+
+\subsection{Physics?}\label{physics}
 
 
 \renewcommand\refname{Conclusion}
