@@ -212,9 +212,39 @@ where by default $W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(
 
 ## Implementation
 
-This was implemented in the `tourr` (REF) package, where the projected ellipsoid can be drawn for each projection.
+This is implemented in the `tourr` (REF) package, where the projected ellipsoid can be drawn for each projection. The guided tour will take arguments specifying the data, and the null variance-covariance matrix. 
 
+```{r}
+#| eval: false
+#| echo: true
+library(tourr)
+library(mulgar)
+set.seed(929)
+vc_null <- matrix(rep(0.5, 5*5), ncol=5)
+diag(vc_null) <- 1
+m_null <- rep(0, 5)
+vc_samp <- matrix(rep(0, 5*5), ncol=5)
+diag(vc_samp) <- 1
+vc_samp[4,5] <- -0.47
+vc_samp[5,4] <- -0.56
+vc_samp <- vc_samp*0.1
+m_samp <- c(0, 0, 0, 1.9, 2.3)
+samp <- as.data.frame(rmvn(6, 
+                           mn = m_samp, 
+                           vc = vc_samp))
+animate_xy(samp, guided_anomaly_tour(anomaly_index(),
+  ellipse=vc_null), ellipse=vc_null, 
+  axes = "bottomleft", half_range=5, center=FALSE)
+```
 
+::: {#fig-anomaly layout-ncol=2}
+
+![Random projection.](images/anomaly1.png){#fig-anomaly1 width=300 align="center"}
+ 
+![Optimal projection.](images/anomaly2.png){#fig-anomaly2 width=300 align="center"}
+
+Two projections of simulated example data corresponding to the sample code: (a) Random projection where sample is inside the 2-D ellipse, (b) Optimal projection from index, showing most of the sample outside. A red cross indicates that the point is outside the p-D ellipse. The optimal projection uses mostly variables $x_4, x_5$, which is expected because these are the two directions where the sample most differs from the norm.
+:::
 
 ## Examples {#sec-examples}
 
