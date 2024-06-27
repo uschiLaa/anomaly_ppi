@@ -189,10 +189,23 @@ $$
 $$
 where $c$ a constant that depends on a specific confidence level.
 
-The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. We call points in the projection that are on the curve $\mathbfit{y}$. From this we can compute the analog equation for the projection as
+The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. That is, the curve 
+consists of $\mathbfit{x}$ satisfying
 
-$$(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2$$
-where $P$ is a $(p\times 2)$ orthonormal basis defining the projection and $\mathbfit{\mu}_p = \mathbfit{\mu} P$ the projected mean. This means the matrix $(P^T \Sigma P)^{-1}$ is defining the ellipse in the \gD{} projection. In general $c$ could be any constant, but typically we would select it as a quantile of the $\chi^2$ distribution, so that the size of the ellipse corresponds to a selected probability.
+$$(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
+$$
+
+for some $\mathbfit{s} \in \mathbb{R}^2$, where $P$ is a $(p\times 2)$ orthonormal basis defining the
+projection. We can write $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
+Making this substitution in the \pD{} ellipsoid equation yields
+
+$$c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = \mathbfit{s} P^T \Sigma P \mathbfit{s}^T
+$$
+
+We call points in the projection that are on the curve $\mathbfit{y}$. From this we can compute the analog equation for the projection as
+
+$$(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.$$
+This means the matrix $(P^T \Sigma P)^{-1}$ is defining the ellipse in the \gD{} projection. In general $c$ could be any constant, but typically we would select it as a quantile of the $\chi^2$ distribution, so that the size of the ellipse corresponds to a selected probability.
 
 <IMAGES OF PROJECTED ELLIPSE>
 
