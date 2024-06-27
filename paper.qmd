@@ -192,7 +192,7 @@ where $c$ a constant that depends on a specific confidence level.
 The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. That is, the curve 
 consists of $\mathbfit{x}$ satisfying
 
-$$(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
+$$\nabla (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
 $$
 
 for some $\mathbfit{s} \in \mathbb{R}^2$, where $P$ is a $(p\times 2)$ orthonormal basis defining the
@@ -202,7 +202,7 @@ Making this substitution in the \pD{} ellipsoid equation yields
 $$c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = \mathbfit{s} P^T \Sigma P \mathbfit{s}^T
 $$
 
-We call points in the projection that are on the curve $\mathbfit{y}$. From this we can compute the analog equation for the projection as
+We call points in the projection that are on the curve \(\mathbfit{y}\), so that \(\mathbfit{y} = \mathbfit{x}P\) for \(\mathbfit{x}\) on the \pD{} curve. Then \(\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P\), where \(\mathbfit{\mu}_p = \mathbfit{\mu} P\) is the projected mean. We then substitute \((\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}\) for \(\mathbfit{s}\) in the previous equation. From this we can compute the analog equation for the projection as
 
 $$(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.$$
 This means the matrix $(P^T \Sigma P)^{-1}$ is defining the ellipse in the \gD{} projection. In general $c$ could be any constant, but typically we would select it as a quantile of the $\chi^2$ distribution, so that the size of the ellipse corresponds to a selected probability.
