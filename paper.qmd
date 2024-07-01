@@ -265,9 +265,7 @@ Two projections of simulated example data corresponding to the sample code: (a) 
 
 ### Medical patients
 
-### Robust statistics
-
-### Physics?
+### Robust statistics: weather extremes
 
 
 ## Conclusion
