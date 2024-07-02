@@ -121,7 +121,22 @@
 \addtolength{\textwidth}{1in}%
 \addtolength{\textheight}{1.7in}%
 \addtolength{\topmargin}{-1in}%
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
@@ -132,6 +147,7 @@
 \newcommand\kD{$k\text{-}D$}
 \newcommand\dD{$d\text{-}D$}
 \newcommand\gD{$2\text{-}D$}
+\newtheorem*{theorem}{Theorem}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -343,33 +359,31 @@ A \pD{} ellipsoid corresponding to a given variance-covariance
 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = c^2
 \] where \(c\) a constant that depends on a specific confidence level.
 
-The projection of an ellipsoid onto \gD{} is an ellipse, where the curve
-of the ellipse is defined through the set of points \(\mathbfit{x}\) for
-which the gradient is parallel to the projection plane. That is, the
-curve consists of \(\mathbfit{x}\) satisfying
+\begin{theorem}
+  The projection of this \pD{} ellipsoid in \gD{} has the equation
+$$(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.$$
+\end{theorem}
+\begin{proof}
+The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. That is, the curve 
+consists of $\mathbfit{x}$ satisfying
 
-\[\nabla (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
-\]
+$$\nabla (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
+$$
 
-for some \(\mathbfit{s} \in \mathbb{R}^2\), where \(P\) is a
-\((p\times 2)\) orthonormal basis defining the projection. We can write
-\(\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma\). Making this
-substitution in the \pD{} ellipsoid equation yields
+for some $\mathbfit{s} \in \mathbb{R}^2$, where $P$ is a $(p\times 2)$ orthonormal basis defining the
+projection. We can write $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
+Making this substitution in the \pD{} ellipsoid equation yields
 
-\[c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = \mathbfit{s} P^T \Sigma P \mathbfit{s}^T
-\]
+$$c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = \mathbfit{s} P^T \Sigma P \mathbfit{s}^T
+$$
 
-We call points in the projection that are on the curve \(\mathbfit{y}\),
-so that \(\mathbfit{y} = \mathbfit{x}P\) for \(\mathbfit{x}\) on the
-\pD{} curve. Then
-\(\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P\),
-where \(\mathbfit{\mu}_p = \mathbfit{\mu} P\) is the projected mean. We
-then substitute
-\((\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}\) for
-\(\mathbfit{s}\) in the previous equation. From this we can compute the
-analog equation for the projection as
+We call points in the projection that are on the curve $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for $\mathbfit{x}$ on the \pD{} curve. Then $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, where $\mathbfit{\mu}_p = \mathbfit{\mu} P$ is the projected mean. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in the equation \(c^2 = \mathbfit{s} P^T \Sigma P \mathbfit{s}^T\). From this we can compute the analog equation for the projection as
 
-\[(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.\]
+$$(\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2$$
+
+as claimed.
+\end{proof}
+
 This means the matrix \((P^T \Sigma P)^{-1}\) is defining the ellipse in
 the \gD{} projection. In general \(c\) could be any constant, but
 typically we would select it as a quantile of the \(\chi^2\)
@@ -474,7 +488,132 @@ where the sample most differs from the norm.}
 
 \section{Examples}\label{sec-examples}
 
-\subsection{Medical patients}\label{medical-patients}
+\subsection{Health: liver function
+tests}\label{health-liver-function-tests}
+
+This example is motivated by a problem posed during consulting with a
+pharmaceutical company, but the data shown here is simulated, simply to
+illustrate the application. Liver function tests commonly provide
+measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase
+(GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and
+alanine aminotransferase (ALT). There are normal ranges on these
+measurements reported by \citet{lib-med-liver-norms} and listed in
+Table~\ref{tbl-liver-norms}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0421}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.2000}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}@{}}
+
+\caption{\label{tbl-liver-norms}Normal ranges provided for liver
+function tests.}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+albumin (g/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+protein (g/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+bilirubin (µmol/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+GGT (IU/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+AST (IU/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+ALP (IU/L)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+ALT (IU/L)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+min & 35 & 60 & 0 & 2 & 5 & 30 & 5 \\
+max & 50 & 80 & 20 & 44 & 30 & 120 & 40 \\
+
+\end{longtable}
+
+These measurements are also likely correlated, based on guidance like
+the \emph{ratio of AST to ALT of 2:1 indicates possible alcohol abuse}.
+Although this was provided by the pharmaceutical company, correlation
+between these measurements for normal patients is not readily available.
+When a correlation matrix for normal patients is provided this would
+allow construction of the null ellipse upon which to examine new
+samples.
+
+Figure~\ref{fig-liver} illustrates two examples. The first is similar to
+the consulting project. A sample of liver test scores for new patients
+was provided in order to examine their values relative to the normal
+range. Here only four tests are used, GGT, AST, ALP, ALT. Plot (a) shows
+a projection of this sample relative to the normal range. Three of the
+patients are outside the confidence ellipse but all of the patients are
+located away from the mean. What has been typical in the past is to
+compute normal values based on tests of healthy young males. The samples
+provided for the project were all recorded on women. We see that this
+sample has slightly lower ALT and ALP, which is consistent with what is
+reported in \citet{lib-med-liver-norms}.
+
+The second example shows a longitudinal record of a single patient,
+measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
+tome order. The projection corresponds to the maxima from a
+projection-pursuit guided tour using the anomaly index:
+
+\[
+P = \left[ \begin{array}{rr}
+            0.371 & -0.128 \\
+            -0.388 & 0.732 \\
+            0.140 & 0.599 \\
+            -0.832 & -0.297 
+            \end{array} \right]
+\]
+
+From the axes representation in Figure~\ref{fig-liver} (b) of this
+projection, we can see that the direction that profile extends is
+primarily contrasting ALT (fourth row) and ALP (third row). This is
+consistent with aging, where ALP increases and ALT decreases.
+
+\begin{figure}
+
+\begin{minipage}{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=3.125in,height=\textheight]{images/liver1.png}
+
+}
+
+\subcaption{\label{fig-liver1}Sample of female patients.}
+
+\end{minipage}%
+%
+\begin{minipage}{0.50\linewidth}
+
+\centering{
+
+\includegraphics[width=3.125in,height=\textheight]{images/liver2.png}
+
+}
+
+\subcaption{\label{fig-liver2}Longitudinal profile of an aging patient.}
+
+\end{minipage}%
+
+\caption{\label{fig-liver}Two projections of simulated example data
+corresponding to common liver tests: (a) sample of female patients, (b)
+longitudinal test results for a single patient. Red cross indicates
+observation is outide the 4-D confidence ellipse. The female patients
+tend to have lower ALP and ALT than the normal range. As the patient
+aged, the level of ALP increases and ALT decreases.}
+
+\end{figure}%
 
 \subsection{Robust statistics: weather
 extremes}\label{robust-statistics-weather-extremes}
