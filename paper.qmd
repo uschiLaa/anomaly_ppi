@@ -391,3 +391,4 @@ Two projections of simulated example data corresponding to common liver tests: (
 
 ## Conclusion
 
+Say something about the relationship with @directional-outlyingness and Stahel-Donoho outlyingness 
