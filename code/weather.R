@@ -5,6 +5,7 @@ library(ShapleyOutlier)
 library(robustHD)
 library(tidyverse)
 library(tourr)
+library(fpc)
 
 data("WeatherVienna")
 
@@ -51,6 +52,16 @@ X_outside_scaled <- t(apply(X_outside,
                             function(x) (x)/sqrt(sum(x^2))))
 #check that it worked
 rowSums(X_outside_scaled^2)
+for(k in 2:6){
+  set.seed(150)
+  X_km <- kmeans(X_outside_scaled, k)
+  cs <- cluster.stats(dist(X_outside_scaled), X_km$cluster)
+  print(cs$dunn2)
+}
+
+#preferred solution 4-5 clusters using dunn2/dunn index
+#will work with k=4
+
 set.seed(150)
 X_km <- kmeans(X_outside_scaled, 4)
 X_km$cluster
@@ -69,3 +80,14 @@ animate_xy(X_outside_2,
            ellipse=as.matrix(Sigma), ellc = size_weather,
            ellmu = mu, center = FALSE,
            axes="off")
+
+
+# steps:
+# 1 - find outliers, split them into angular clusters
+# 1a - use some cluster metric to decide on k
+# 2 - with all observations run anomaly index, show the
+# clusters in different colors
+# 2a - define an axis display that only labels "long" axes
+# 3 - for some subset(s) of interest run anomaly index
+# only on the subset
+
