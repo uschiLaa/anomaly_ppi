@@ -4,6 +4,7 @@
 library(ShapleyOutlier)
 library(robustHD)
 library(tidyverse)
+library(tourr)
 
 data(TopGear)
 
@@ -90,3 +91,90 @@ mu <-MCD$center
 Sigma <- MCD$cov
 Sigma_inv <- solve(MCD$cov)
 
+size_weather <- qchisq(2*pnorm(5)-1, ncol(X))
+
+set.seed(129)
+animate_xy(X, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(Sigma),
+                               ellc = size_weather), 
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           axes="off")
+
+## now look for angular clusters
+dist_pd <- mahalanobis(X, mu, Sigma)
+X_outside <- X[dist_pd > size_weather,]
+X_outside_scaled <- t(apply(X_outside,
+                            1,
+                            function(x) (x)/sqrt(sum(x^2))))
+#check that it worked
+rowSums(X_outside_scaled^2)
+set.seed(150)
+X_km <- kmeans(X_outside_scaled, 4)
+X_km$cluster
+
+# cluster 1: high temperature
+# cluster 2: 
+# cluster 3: temperature + sun_h, num_clear
+# cluster 4: avg_t_min small for the outlying points
+X_outside_2 <- X_outside[X_km$cluster == 4,]
+set.seed(129)
+animate_xy(X_outside_2, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(Sigma),
+                               ellmu = mu,
+                               ellc = size_weather), 
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           ellmu = mu, center = FALSE,
+           axes="off")
+
+animate_xy(X_outside_2, 
+           grand_tour(),
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           ellmu = mu, center = FALSE,
+           axes="off", half_range = 7)
+
+#### try again but with a bit smaller p
+
+X <- weather_summer %>% dplyr::select(-c(num_frost, num_ice, year,
+                                        wind_v, num_precp_01))
+rownames(X) <- weather_summer$year
+#> Warning: Setting row names on a tibble is deprecated.
+X <- robStandardize(X)
+as.data.frame(X) |>
+  rownames_to_column("year") |>
+  select(-year) |>
+  write_csv("data_weather.csv")
+
+set.seed(1)
+MCD <- covMcd(X, alpha = 0.5, nsamp = "best")
+#> Warning in .fastmcd(x, h, nsamp, nmini, kmini, trace = as.integer(trace)): 'nsamp = "best"' allows maximally 100000 subsets;
+#> computing these subsets of size 17 out of 68
+mu <-MCD$center
+Sigma <- MCD$cov
+Sigma_inv <- solve(MCD$cov)
+
+size_weather <- qchisq(2*pnorm(5)-1, ncol(X))
+
+
+set.seed(129)
+animate_xy(X, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(Sigma),
+                               ellc = size_weather), 
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           axes="off")
+
+
+
+## now look for angular clusters
+dist_pd <- mahalanobis(X, mu, Sigma)
+X_outside <- X[dist_pd > size_weather,]
+## to get angular clusters normalize the lengths
+X_outside_scaled <- t(apply(X_outside,
+                          1,
+                          function(x) (x)/sum(x^2)))
+#check that it worked
+rowSums(X_outside_scaled)
+set.seed(150)
+X_km <- kmeans(X_outside_scaled, 3)
