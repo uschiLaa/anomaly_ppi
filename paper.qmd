@@ -1,5 +1,5 @@
 ---
-title: "Are you normal? A new projection pursuit index to assess a sample against a multivariate null distribution"
+title: "Is this normal? A new projection pursuit index to assess a sample against a multivariate null distribution"
 author: "Annalisa Calvi, Ursula Laa, Dianne Cook"
 format:
   jasa-pdf:
