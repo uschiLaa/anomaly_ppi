@@ -240,21 +240,23 @@ Annalisa Calvi, Ursula Laa, Dianne Cook\\
 Linear projections are useful in many aspects of statistical analysis of
 multivariate data, and especially useful for visualising the data. A
 linear projection provides a dimension reduction while maintaining
-interpretability. For example, a biplot (REF) shows the structure
-creating the maximum variance in the data, and also visualizing the
-projection matrix to learn which variables contribute to it. We might
-find clusters of outliers that were hiding in high dimensions.
+interpretability. For example, a biplot \citep{Ga71, GH96} shows the
+structure creating the maximum variance in the data, and also
+visualizing the projection matrix to learn which variables contribute to
+it. We might find clusters of outliers that were hiding in high
+dimensions.
 
-More generally, projection pursuit (REF) defines a quantitative
-criterion for the interestingness of a projection (a projection pursuit
-index), and searches the space of possible projections for the most
-interesting one to display. We can also define sequences of interpolated
-linear projections to better understand a multivariate distribution.
-Animating a randomly selected interpolated sequence of linear
-projections is called a grand tour (REF). The combination of these two
-approaches would then use a projection pursuit index to select
+More generally, projection pursuit \citep{FT74, JS87, Hu85} defines a
+quantitative criterion for the interestingness of a projection (a
+projection pursuit index), and searches the space of possible
+projections for the most interesting one to display. We can also define
+sequences of interpolated linear projections to better understand a
+multivariate distribution. Animating a randomly selected interpolated
+sequence of linear projections is called a grand tour
+\citep{As85, BA86b, BCAH05, CLBW06, tours2022}. The combination of these
+two approaches would then use a projection pursuit index to select
 interesting projections, but display them via an interpolated path to
-provide context. This is called a guided tour (\citet{cook1995}).
+provide context. This is called a guided tour \citep{cook1995}.
 
 The question is whether we can use these techniques to assess new data
 samples in the context of an established normal, such as a specific
