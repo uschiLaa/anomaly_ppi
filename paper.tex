@@ -395,12 +395,13 @@ probability.
 \subsection{Index specification}\label{index-specification}
 
 To define a measure of an interesting projection is to maximize the
-\textbf{average Malahanobis distance in the projection} for a subset of
-points, \(W\). The set of points could be chosen in different ways, but
-the default is those that are outside the specified ellipsoid in \pD{}.
-Alternatives could be to select a set of observations with the largest
-Mahalanobis distance, manually select observations or possibly a group
-of points identified via clustering of the extremes.
+average Mahahlanobis distance \citep{mahalanobis} in the projection for
+a subset of points, \(W\). The set of points could be chosen in
+different ways, but the default is those that are outside the specified
+ellipsoid in \pD{}. Alternatives could be to select a set of
+observations with the largest Mahalanobis distance, manually select
+observations or possibly a group of points identified via clustering of
+the extremes.
 
 The index is written as
 
@@ -424,9 +425,9 @@ groups of observations that have similar directions of departure.
 
 \section{Implementation}\label{implementation}
 
-This is implemented in the \texttt{tourr} (REF) package, where the
-projected ellipsoid can be drawn for each projection. The guided tour
-will take arguments specifying the data, and the null
+This is implemented in the \texttt{tourr} \citep{tourr, tourr-cran}
+package, where the projected ellipsoid can be drawn for each projection.
+The guided tour will take arguments specifying the data, and the null
 variance-covariance matrix.
 
 \begin{Shaded}
@@ -623,7 +624,15 @@ extremes}\label{robust-statistics-weather-extremes}
 \section{Conclusion}\label{conclusion}
 
 Say something about the relationship with
-\citet{directional-outlyingness} and Stahel-Donoho outlyingness
+\citet{directional-outlyingness} and Stahel-Donoho outlyingness. This
+method could be implemented in the way we used to show ellipses,
+generate points on the surface of the irregular shape, overlay the data
+on this and make projections.
+
+Difference from general outlier detection, see use of Mahalanobis
+distance in \citet{filzmoser2018}.
+
+Potential new directions.
 
 
   \bibliography{bibliography.bib}

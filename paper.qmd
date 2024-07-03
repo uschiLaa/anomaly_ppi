@@ -224,7 +224,7 @@ This means the matrix $(P^T \Sigma P)^{-1}$ is defining the ellipse in the \gD{}
 
 ### Index specification
 
-To define a measure of an interesting projection is to maximize the **average Malahanobis distance in the projection** for a subset of points, $W$. The set of points could be chosen in different ways, but the default is those that are outside the specified ellipsoid in \pD{}. Alternatives could be to select a set of observations with the largest Mahalanobis distance, manually select observations or possibly a group of points identified via clustering of the extremes.
+To define a measure of an interesting projection is to maximize the average Mahahlanobis distance [@mahalanobis] in the projection for a subset of points, $W$. The set of points could be chosen in different ways, but the default is those that are outside the specified ellipsoid in \pD{}. Alternatives could be to select a set of observations with the largest Mahalanobis distance, manually select observations or possibly a group of points identified via clustering of the extremes.
 
 The index is written as
 
@@ -240,7 +240,7 @@ If the observations in $W$ are primarily departing from the normal range in the 
 
 ## Implementation
 
-This is implemented in the `tourr` (REF) package, where the projected ellipsoid can be drawn for each projection. The guided tour will take arguments specifying the data, and the null variance-covariance matrix. 
+This is implemented in the `tourr` [@tourr;@tourr-cran] package, where the projected ellipsoid can be drawn for each projection. The guided tour will take arguments specifying the data, and the null variance-covariance matrix. 
 
 ```{r}
 #| eval: false
@@ -391,4 +391,10 @@ Two projections of simulated example data corresponding to common liver tests: (
 
 ## Conclusion
 
-Say something about the relationship with @directional-outlyingness and Stahel-Donoho outlyingness 
+Say something about the relationship with @directional-outlyingness and Stahel-Donoho outlyingness. This method could be implemented in the way we used to show ellipses, generate points on the surface of the irregular shape, overlay the data on this and make projections.
+
+Difference from general outlier detection, see use of Mahalanobis distance in @filzmoser2018.
+
+Potential new directions.
+
+
