@@ -470,6 +470,15 @@ animate_xy(X,
            palette = "Purple-Yellow",
            center = FALSE, rescale = FALSE)
 
+# extract final view, draw with new axis display that
+# only labels longer arrows, draw without red X
+
+# cluster 4 only has two points, they are more in
+# the center when optimizing for all outliers
+# next step: check optimization for only cluster 4
+# also cluster 3 might be of interest, it appears
+# somewhat spread out in the final view, but it is
+# also the largest cluster
 
 ```
 
