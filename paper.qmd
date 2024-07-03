@@ -468,6 +468,14 @@ animate_xy(X,
            palette = "Plasma", half_range = 5,
            center = FALSE, rescale = FALSE)
 
+# adding labels and running grand tour to better track
+# why there might be a missmatch
+animate_xy(X,
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           axes="off", col = as.factor(cluster_labels),
+           palette = "Plasma", half_range = 5,
+           center = FALSE, rescale = FALSE, obs_labels = rownames(X))
+
 ```
 
 ## Conclusion
