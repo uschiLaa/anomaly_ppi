@@ -621,18 +621,18 @@ aged, the level of ALP increases and ALT decreases.}
 \subsection{Robust statistics: weather
 extremes}\label{robust-statistics-weather-extremes}
 
-Another application would compare outlying points to a reference normal
-distribution that is derived using robust methods on the original data.
-To illustrate this we work on the weather data example from
-\citet{filzmoser2018}. The data contains 16 numerical measurements that
-are averages across the three summer months June, July and August, these
-are provided for 68 years (1955 - 2022), see \citet{filzmoser2018} for
-more details.
+This example is motivated by the weather data example from
+\citet{filzmoser2018}. We illustrate using the anomaly index to compare
+potential outliers with a reference normal distribution that is derived
+using robust methods on the original data. The data contains 16
+numerical measurements that are averages across the three summer months
+June, July and August, these are provided for 68 years (1955 - 2022),
+see \citet{filzmoser2018} for more details.
 
 To estimate the underlying normal distribution the data is first
 centered and scaled using the median and the median absolute deviation
 (MAD), before applying the minimum covariance determinant (MCD)
-estimator \citet{rousseeuw1985multivariate} using the implementation in
+estimator \citep{rousseeuw1985multivariate} using the implementation in
 \citet{robustbase}. The MCD estimates for the mean vector and the
 variance-covariance matrix are then used to define the reference normal
 distribution.
@@ -649,9 +649,10 @@ different cluster validation statistics computed from \citet{fpc}
 suggests that \(k=4\) or \(k=5\) is preferred, for simplicity we will
 work with \(k=4\).
 
-We first apply the new anomaly index to the full dataset, such that the
-final projection will identify a compromise and provide a global picture
-of where the outlying points differ from the normal distribution.
+The new anomaly index is first applied to the full dataset, such that
+the final projection will identify a compromise and provide a global
+picture of where the outlying points differ from the normal
+distribution.
 
 \section{Conclusion}\label{conclusion}
 
