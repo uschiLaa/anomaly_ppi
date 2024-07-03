@@ -458,23 +458,27 @@ cluster_labels_all <- as_tibble(X,
 cluster_labels <- factor(cluster_labels_all$cluster,
                          levels = c(1:5, 0))
 
-set.seed(129)
+set.seed(22)
 animate_xy(X, 
            guided_anomaly_tour(anomaly_index(),
                                ellipse=as.matrix(Sigma),
-                               ellc = size_weather), 
+                               ellc = size_weather,
+                               ellmu = mu), 
            ellipse=as.matrix(Sigma), ellc = size_weather,
+           ellmu = mu,
            axes="off", col = as.factor(cluster_labels),
-           palette = "Plasma", half_range = 5,
+           palette = "Purple-Yellow",
            center = FALSE, rescale = FALSE)
 
-# adding labels and running grand tour to better track
-# why there might be a missmatch
-animate_xy(X,
-           ellipse=as.matrix(Sigma), ellc = size_weather,
-           axes="off", col = as.factor(cluster_labels),
-           palette = "Plasma", half_range = 5,
-           center = FALSE, rescale = FALSE, obs_labels = rownames(X))
+# extract final view, draw with new axis display that
+# only labels longer arrows, draw without red X
+
+# cluster 4 only has two points, they are more in
+# the center when optimizing for all outliers
+# next step: check optimization for only cluster 4
+# also cluster 3 might be of interest, it appears
+# somewhat spread out in the final view, but it is
+# also the largest cluster
 
 ```
 
