@@ -388,6 +388,87 @@ Two projections of simulated example data corresponding to common liver tests: (
 
 ### Robust statistics: weather extremes
 
+Another application would compare outlying points to a reference normal distribution that is derived using robust methods on the original data. To illustrate this we work on the weather data example from @filzmoser2018. The data contains 16 numerical measurements that are averages across the three summer months June, July and August, these are provided for 68 years (1955 - 2022), see @filzmoser2018 for more details.
+
+To estimate the underlying normal distribution the data is first centered and scaled using the median and the median absolute deviation (MAD), before applying the minimum covariance determinant (MCD) estimator @rousseeuw1985multivariate using the implementation in @robustbase. The MCD estimates for the mean vector and the variance-covariance matrix are then used to define the reference normal distribution.
+
+Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value, given $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @filzmoser2018, we will further separate the outlying points into clusters. To focus on the direction when grouping the points we first normalize observations to have length $1$ and then apply k-means clustering. Considering different cluster validation statistics computed from @fpc suggests that $k=4$ or $k=5$ is preferred, for simplicity we will work with $k=4$.
+
+We first apply the new anomaly index to the full dataset, such that the final projection will identify a compromise and provide a global picture of where the outlying points differ from the normal distribution.
+
+```{r}
+#| eval: false
+#| echo: false
+library(ShapleyOutlier)
+library(robustHD)
+library(tidyverse)
+library(tourr)
+library(fpc)
+
+data("WeatherVienna")
+# first part of the code is preprocessing
+# this is following the vignette from the package
+# see https://cran.r-project.org/web/packages/ShapleyOutlier/vignettes/ShapleyOutlier_examples.html
+weather_summer <- WeatherVienna %>% dplyr::select(-c(`t`, t_max, t_min, p_max, p_min)) %>%
+  drop_na() %>%
+  filter(month %in% c("JUN", "JUL", "AUG")) %>%
+  filter(year >= 1955) %>%
+  group_by(year) %>%
+  dplyr::select(-month) %>%
+  summarise(across(.cols = everything(), function(x) mean(x)))
+
+X <- weather_summer %>% dplyr::select(-c(num_frost, num_ice, year))
+rownames(X) <- weather_summer$year
+#> Warning: Setting row names on a tibble is deprecated.
+X <- robStandardize(X)
+
+set.seed(1)
+MCD <- covMcd(X, alpha = 0.5, nsamp = "best")
+#> Warning in .fastmcd(x, h, nsamp, nmini, kmini, trace = as.integer(trace)): 'nsamp = "best"' allows maximally 100000 subsets;
+#> computing these subsets of size 17 out of 68
+mu <-MCD$center
+Sigma <- MCD$cov
+
+###### preprocessing done
+# this is now our own code to work with these inputs
+
+# start with finding outlying points and clustering
+size_weather <- qchisq(2*pnorm(5)-1, ncol(X))
+dist_pd <- mahalanobis(X, mu, Sigma)
+X_outside <- X[dist_pd > size_weather,]
+X_outside_scaled <- t(apply(X_outside, 1,
+                    function(x) (x)/sqrt(sum(x^2))))
+for(k in 2:6){
+  set.seed(150)
+  X_km <- kmeans(X_outside_scaled, k)
+  cs <- cluster.stats(dist(X_outside_scaled), X_km$cluster)
+  print(cs$dunn)
+}
+
+#preferred solution 5 clusters using dunn/dunn2 index
+set.seed(150)
+X_km <- kmeans(X_outside_scaled, 5)
+# making a vector that labels all points
+# use 0 to indicate point is not an outlier
+cluster_labels_all <- as_tibble(X,
+                               rownames = "year") %>%
+  left_join(as_tibble(X_km$cluster,
+                              rownames = "year")) %>%
+  mutate(cluster = if_else(is.na(value), 0, value))
+cluster_labels <- factor(cluster_labels_all$cluster,
+                         levels = c(1:5, 0))
+
+set.seed(129)
+animate_xy(X, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(Sigma),
+                               ellc = size_weather), 
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           axes="off", col = as.factor(cluster_labels),
+           palette = "Plasma", half_range = 5,
+           center = FALSE, rescale = FALSE)
+
+```
 
 ## Conclusion
 
