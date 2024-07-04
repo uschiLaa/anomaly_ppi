@@ -178,7 +178,7 @@ p4 <- ggplot(d4, aes(x=V1, y=V2, shape=type)) +
 p1 + p2 + p3 + p4 + plot_layout(ncol=4)
 ```
 
-For example, @fit-compare compares a new sample of patient scores against the normal range represented by an ellipse. 
+For example, @fig-compare compares a new sample of patient scores against the normal range represented by an ellipse (a) and also against a simulated sample of normal patients (b). While these are useful approaches, the ragged edges of the projected ellipse make it difficult to compare the new sample precisely agains the normal ranges.
 
 ```{r}
 #| eval: false
@@ -227,11 +227,11 @@ animate_xy(norm_ci_plus[,1:4], col=norm_ci_plus$type)
 
 ::: {#fig-compare layout-ncol=2}
 
-![Sample of patients relative to confidence ellipse.](images/example1.png){#fig-compare1 width=300 align="center"}
+![Relative to confidence ellipse.](images/example1.png){#fig-compare1 width=250 align="center"}
  
-![Sample of patients relative to relative to simulated sample of normal patients.](images/example2.png){#fig-compare width=300 align="center"}
+![Relative to normal patients.](images/example2.png){#fig-compare width=250 align="center"}
 
-Illustration of current procedure: (a) compare new sample with points of the surface of a $p-D$ ellipse, (b) compare new sample with a simulated sample of normal patients. Although both approaches are useful, the rough edges of the projected ellipse points makes it difficult to precisely assess the positions of the new sample against the normal bounds.
+Illustration of current procedure: (a) compare new sample with points of the surface of a $p\text{-}D$ ellipse, (b) compare new sample with a simulated sample of normal patients. Although both approaches are useful, the rough edges of the projected ellipse points makes it difficult to precisely assess the positions of the new sample against the normal bounds.
 :::
 
 Although this is flexible, this does not make it easy to guide the tour towards the directions (projections) where the samples are most different from the normal. What would be desirable is to analytically define the confidence ellipsoid, compute flag observations that are outside, steer the tour to projections that reveal the extent of the difference. And also display the projected ellipsoid as a geometric shape rather than a sample of points. These are the procedures that are described in the next section.  
