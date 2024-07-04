@@ -48,6 +48,7 @@ library(ggplot2)
 library(patchwork)
 library(knitr)
 library(kableExtra)
+library(mvtnorm)
 ```
 
 ```{r}
@@ -99,7 +100,6 @@ To compare a new sample with an existing norm, like a multivariate normal distri
 1. Simulating a sample of observations ($\mathbfit{x}$, which are \pD{} vectors)
 from $N_p(\mathbfit{\mu}, \Sigma)$. 
 2. Transforming each observation to have unit distance from the mean, $\frac{\mathbfit{x}^\top}{||\mathbfit{x}^\top||}$. 
-
 To convert this to points on the surface of a confidence ellipsoid, 
 
 3. transform the shape using a specific variance covariance, and shift to center on the mean vector. 
@@ -178,7 +178,61 @@ p4 <- ggplot(d4, aes(x=V1, y=V2, shape=type)) +
 p1 + p2 + p3 + p4 + plot_layout(ncol=4)
 ```
 
-<PLOTS FROM USCHI's PHYSICS EXAMPLE HERE>
+For example, @fig-compare compares a new sample of patient scores against the normal range represented by an ellipse (a) and also against a simulated sample of normal patients (b). While these are useful approaches, the ragged edges of the projected ellipse make it difficult to compare the new sample precisely agains the normal ranges.
+
+```{r}
+#| eval: false
+#| echo: false
+liver_stats <- tribble(
+  ~ALT, ~AST, ~ALP, ~albumin, ~bilirubin, ~GGT, ~protein, ~sex, ~stat,
+  5,     5,   30,      35,        0,    2, 60,   "m", "mn",
+  40,     30,  120,      50,        20,   44, 80,   "m", "mx",
+  5,     5,   30,      35,        0,    2, 60,   "f", "mn",
+  40,     30,  120,      50,        20,   70, 80,    "f", "mx"
+)
+set.seed(1158)
+norm_vc <- diag(1, 4, 4)
+norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
+for (i in 1:3)
+  for (j in (i+1):4)
+    norm_vc[j, i] <- norm_vc[i, j]
+colnames(norm_vc) <- c("GGT", "AST", "ALP", "ALT")
+norm_samp <- rmvnorm(500, sigma=as.matrix(norm_vc))
+colnames(norm_samp) <- c("GGT", "AST", "ALP", "ALT")
+norm_samp <- as.data.frame(norm_samp)
+norm_ci <- gen_vc_ellipse(norm_vc) * 2
+colnames(norm_ci) <- c("GGT", "AST", "ALP", "ALT")
+norm_ci <- as.data.frame(norm_ci)
+
+set.seed(217)
+women_vc <- norm_vc
+women_vc[1,4] <- 0.5
+women_vc[4,1] <- 0.5
+women <- rmvnorm(16, mean=c(0.3, -0.3, -1.2, -1.5),
+                 sigma = women_vc)
+colnames(women) <- c("GGT", "AST", "ALP", "ALT")
+women <- as.data.frame(women)
+
+norm_plus <- bind_rows(norm_samp, women)
+norm_plus <- norm_plus |>
+  mutate(type = factor(c(rep("norm", 500), rep("samp", 16))))
+animate_xy(norm_plus[,1:4], col=norm_plus$type)
+
+norm_ci_plus <- bind_rows(norm_ci, women)
+norm_ci_plus <- norm_ci_plus |>
+  mutate(type = factor(c(rep("ci", 500), rep("samp", 16))))
+animate_xy(norm_ci_plus[,1:4], col=norm_ci_plus$type)
+
+```
+
+::: {#fig-compare layout-ncol=2}
+
+![Relative to confidence ellipse.](images/example1.png){#fig-compare1 width=250 align="center"}
+ 
+![Relative to normal patients.](images/example2.png){#fig-compare width=250 align="center"}
+
+Illustration of current procedure: (a) compare new sample with points of the surface of a $p\text{-}D$ ellipse, (b) compare new sample with a simulated sample of normal patients. Although both approaches are useful, the rough edges of the projected ellipse points makes it difficult to precisely assess the positions of the new sample against the normal bounds.
+:::
 
 Although this is flexible, this does not make it easy to guide the tour towards the directions (projections) where the samples are most different from the normal. What would be desirable is to analytically define the confidence ellipsoid, compute flag observations that are outside, steer the tour to projections that reveal the extent of the difference. And also display the projected ellipsoid as a geometric shape rather than a sample of points. These are the procedures that are described in the next section.  
 
@@ -308,32 +362,6 @@ These measurements are also likely correlated, based on guidance like the *ratio
 ```{r}
 #| eval: false
 #| echo: false
-liver_stats <- tribble(
-  ~ALT, ~AST, ~ALP, ~albumin, ~bilirubin, ~GGT, ~protein, ~sex, ~stat,
-  5,     5,   30,      35,        0,    2, 60,   "m", "mn",
-  40,     30,  120,      50,        20,   44, 80,   "m", "mx",
-  5,     5,   30,      35,        0,    2, 60,   "f", "mn",
-  40,     30,  120,      50,        20,   70, 80,    "f", "mx"
-)
-set.seed(1158)
-norm_vc <- diag(1, 4, 4)
-norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
-for (i in 1:3)
-  for (j in (i+1):4)
-    norm_vc[j, i] <- norm_vc[i, j]
-colnames(norm_vc) <- c("GGT", "AST", "ALP", "ALT")
-norm_samp <- rmvnorm(500, sigma=as.matrix(norm_vc))
-colnames(norm_samp) <- c("GGT", "AST", "ALP", "ALT")
-set.seed(217)
-
-women_vc <- norm_vc
-women_vc[1,4] <- 0.5
-women_vc[4,1] <- 0.5
-women <- rmvnorm(16, mean=c(0.3, -0.3, -1.2, -1.5),
-                 sigma = women_vc)
-colnames(women) <- c("GGT", "AST", "ALP", "ALT")
-women <- as.data.frame(women)
-
 animate_xy(women,            
            ellipse=norm_vc, 
            axes = "bottomleft", 
