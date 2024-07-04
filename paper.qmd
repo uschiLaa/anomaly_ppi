@@ -454,20 +454,43 @@ cluster_labels_all <- as_tibble(X,
                                rownames = "year") %>%
   left_join(as_tibble(X_km$cluster,
                               rownames = "year")) %>%
-  mutate(cluster = if_else(is.na(value), 0, value))
+  mutate(cluster = if_else(is.na(value), 0, value)) %>%
+  arrange(cluster)
 cluster_labels <- factor(cluster_labels_all$cluster,
                          levels = c(1:5, 0))
 
+X_sorted <- cluster_labels_all %>%
+  select(-year, -cluster, -value)
+
 set.seed(22)
-animate_xy(X, 
+animate_xy(as.matrix(X_sorted), 
            guided_anomaly_tour(anomaly_index(),
                                ellipse=as.matrix(Sigma),
                                ellc = size_weather,
                                ellmu = mu), 
            ellipse=as.matrix(Sigma), ellc = size_weather,
            ellmu = mu,
-           axes="off", col = as.factor(cluster_labels),
+           axes="bottomleft",
+           col = as.factor(cluster_labels),
            palette = "Purple-Yellow",
+           center = FALSE, rescale = FALSE)
+
+
+# color codes
+# "#80146E" "#7262B2" "#31A0C2" "#5ECBBB" "#B9E5B9"
+# "#F5F2D8"
+# wait for getting random starting planes for
+# better results
+set.seed(55)
+animate_xy(X_sorted[cluster_labels == 4,], 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=as.matrix(Sigma),
+                               ellc = size_weather,
+                               ellmu = mu), 
+           ellipse=as.matrix(Sigma), ellc = size_weather,
+           ellmu = mu,
+           axes="bottomleft",
+           col = "#5ECBBB", half_range = 7,
            center = FALSE, rescale = FALSE)
 
 # extract final view, draw with new axis display that
@@ -481,6 +504,18 @@ animate_xy(X,
 # also the largest cluster
 
 ```
+
+::: {#fig-weather layout-ncol=2}
+
+![All outlying points.](images/weather1.png){#fig-weather1 width=300 align="center"}
+ 
+![Only cluster 4.](images/weather2.png){#fig-weather2 width=300 align="center"}
+
+
+Projection identified by the anomaly index. (a) shows the preferred projection when averaging all outlying points. (b) shows the preferred projection when optimizing only for cluster 4, which could not be resolved in the view in (a).
+:::
+
+
 
 ## Conclusion
 
