@@ -416,13 +416,13 @@ Two projections of simulated example data corresponding to common liver tests: (
 
 ### Robust statistics: weather extremes
 
-This example is motivated by the weather data example from @filzmoser2018. We illustrate using the anomaly index to  compare potential outliers with a reference normal distribution that is derived using robust methods on the original data. The data contains 16 numerical measurements that are averages across the three summer months June, July and August, these are provided for 68 years (1955 - 2022), see @filzmoser2018 for more details.
+This example is motivated by the weather data example from @filzmoser2018. We illustrate using the anomaly index to  compare potential outliers with a reference normal distribution that is derived using robust methods on the original data. The data contains 16 numerical measurements that are averages across the three summer months June, July and August, reported for 68 years (1955 - 2022) (see @filzmoser2018 for more details).
 
 To estimate the underlying normal distribution the data is first centered and scaled using the median and the median absolute deviation (MAD), before applying the minimum covariance determinant (MCD) estimator [@rousseeuw1985multivariate] using the implementation in @robustbase. The MCD estimates for the mean vector and the variance-covariance matrix are then used to define the reference normal distribution.
 
-Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value, given $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @filzmoser2018, we will further separate the outlying points into clusters. To focus on the direction when grouping the points we first normalize observations to have length $1$ and then apply k-means clustering. Considering different cluster validation statistics computed from @fpc suggests that $k=4$ or $k=5$ is preferred, for simplicity we will work with $k=4$.
+Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value. With $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @filzmoser2018, we will further separate the outlying points into clusters based on  similarity in direction. The similarity is computed by first normalizing observations to have length $1$ and then apply k-means clustering with Euclidean distance. The cluster validation statistics computed using @fpc suggest that $k=4$ or $k=5$ is reasonable, so for simplicity we will work with $k=4$.
 
-The new anomaly index is first applied to the full dataset, such that the final projection will identify a compromise and provide a global picture of where the outlying points differ from the normal distribution.
+The new anomaly index is first applied to the full dataset, such that the final projection will be affected by averaging distance of points in many directions. It provides a global picture showing where the outlying points differ from the normal distribution.
 
 ```{r}
 #| eval: false
@@ -552,15 +552,15 @@ animate_xy(X_sorted[cluster_labels == 4,],
 
 ::: {#fig-weather layout-ncol=2}
 
-![All outlying points.](images/weather1.png){#fig-weather1 width=300 align="center"}
+![All outlying points clustered](images/weather1.png){#fig-weather1 width=300 align="center"}
  
-![Only cluster 4.](images/weather2.png){#fig-weather2 width=300 align="center"}
+![Only cluster 4](images/weather2.png){#fig-weather2 width=300 align="center"}
 
 
-Projection identified by the anomaly index. (a) shows the preferred projection when averaging all outlying points. (b) shows the preferred projection when optimizing only for cluster 4, which could not be resolved in the view in (a).
+Examining weather anomalies using projections identified by the anomaly index: (a) computed on all outlying points, (b) computed only for cluster 4. In (a) the outlying points are somewhat orthogonal to the normal ellipse, which is primarily using the temperature min (`atmn`) and max (`atmx`) variables. In (b) the two observations are primarily extreme in the minimum temperature (`atmn`) variable, and have lower than normal minima.
 :::
 
-
+XXX SOMETHING ON WHAT THIS MEANS RELATIVE TO THE ORIGINAL EXAMPLE
 
 ## Conclusion
 

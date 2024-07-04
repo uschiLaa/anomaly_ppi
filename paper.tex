@@ -657,8 +657,8 @@ This example is motivated by the weather data example from
 potential outliers with a reference normal distribution that is derived
 using robust methods on the original data. The data contains 16
 numerical measurements that are averages across the three summer months
-June, July and August, these are provided for 68 years (1955 - 2022),
-see \citet{filzmoser2018} for more details.
+June, July and August, reported for 68 years (1955 - 2022) (see
+\citet{filzmoser2018} for more details).
 
 To estimate the underlying normal distribution the data is first
 centered and scaled using the median and the median absolute deviation
@@ -669,21 +669,21 @@ variance-covariance matrix are then used to define the reference normal
 distribution.
 
 Here we will consider points to be outlying if they are more than
-\(5 \sigma\) away from that mean value, given \(p=16\) this corresponds
+\(5 \sigma\) away from that mean value. With \(p=16\) this corresponds
 to a Mahalanobis distance of \(60\) or larger. This will identify \(20\)
 out of the \(68\) observations as outlying. Since these are outlying in
 different combinations of variables, as found in \citet{filzmoser2018},
-we will further separate the outlying points into clusters. To focus on
-the direction when grouping the points we first normalize observations
-to have length \(1\) and then apply k-means clustering. Considering
-different cluster validation statistics computed from \citet{fpc}
-suggests that \(k=4\) or \(k=5\) is preferred, for simplicity we will
-work with \(k=4\).
+we will further separate the outlying points into clusters based on
+similarity in direction. The similarity is computed by first normalizing
+observations to have length \(1\) and then apply k-means clustering with
+Euclidean distance. The cluster validation statistics computed using
+\citet{fpc} suggest that \(k=4\) or \(k=5\) is reasonable, so for
+simplicity we will work with \(k=4\).
 
 The new anomaly index is first applied to the full dataset, such that
-the final projection will identify a compromise and provide a global
-picture of where the outlying points differ from the normal
-distribution.
+the final projection will be affected by averaging distance of points in
+many directions. It provides a global picture showing where the outlying
+points differ from the normal distribution.
 
 \begin{figure}
 
@@ -695,7 +695,7 @@ distribution.
 
 }
 
-\subcaption{\label{fig-weather1}All outlying points.}
+\subcaption{\label{fig-weather1}All outlying points clustered}
 
 \end{minipage}%
 %
@@ -707,16 +707,22 @@ distribution.
 
 }
 
-\subcaption{\label{fig-weather2}Only cluster 4.}
+\subcaption{\label{fig-weather2}Only cluster 4}
 
 \end{minipage}%
 
-\caption{\label{fig-weather}Projection identified by the anomaly index.
-(a) shows the preferred projection when averaging all outlying points.
-(b) shows the preferred projection when optimizing only for cluster 4,
-which could not be resolved in the view in (a).}
+\caption{\label{fig-weather}Examining weather anomalies using
+projections identified by the anomaly index: (a) computed on all
+outlying points, (b) computed only for cluster 4. In (a) the outlying
+points are somewhat orthogonal to the normal ellipse, which is primarily
+using the temperature min (\texttt{atmn}) and max (\texttt{atmx})
+variables. In (b) the two observations are primarily extreme in the
+minimum temperature (\texttt{atmn}) variable, and have lower than normal
+minima.}
 
 \end{figure}%
+
+XXX SOMETHING ON WHAT THIS MEANS RELATIVE TO THE ORIGINAL EXAMPLE
 
 \section{Conclusion}\label{conclusion}
 
