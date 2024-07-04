@@ -437,15 +437,15 @@ data("WeatherVienna")
 # first part of the code is preprocessing
 # this is following the vignette from the package
 # see https://cran.r-project.org/web/packages/ShapleyOutlier/vignettes/ShapleyOutlier_examples.html
-weather_summer <- WeatherVienna %>% dplyr::select(-c(`t`, t_max, t_min, p_max, p_min)) %>%
-  drop_na() %>%
-  filter(month %in% c("JUN", "JUL", "AUG")) %>%
-  filter(year >= 1955) %>%
-  group_by(year) %>%
-  dplyr::select(-month) %>%
+weather_summer <- WeatherVienna |> dplyr::select(-c(`t`, t_max, t_min, p_max, p_min)) |>
+  drop_na() |>
+  filter(month %in% c("JUN", "JUL", "AUG")) |>
+  filter(year >= 1955) |>
+  group_by(year) |>
+  dplyr::select(-month) |>
   summarise(across(.cols = everything(), function(x) mean(x)))
 
-X <- weather_summer %>% dplyr::select(-c(num_frost, num_ice, year))
+X <- weather_summer |> dplyr::select(-c(num_frost, num_ice, year))
 rownames(X) <- weather_summer$year
 #> Warning: Setting row names on a tibble is deprecated.
 X <- robStandardize(X)
@@ -479,16 +479,31 @@ X_km <- kmeans(X_outside_scaled, 5)
 # making a vector that labels all points
 # use 0 to indicate point is not an outlier
 cluster_labels_all <- as_tibble(X,
-                               rownames = "year") %>%
+                               rownames = "year") |>
   left_join(as_tibble(X_km$cluster,
-                              rownames = "year")) %>%
-  mutate(cluster = if_else(is.na(value), 0, value)) %>%
+                              rownames = "year")) |>
+  mutate(cluster = if_else(is.na(value), 0, value)) |>
   arrange(cluster)
 cluster_labels <- factor(cluster_labels_all$cluster,
                          levels = c(1:5, 0))
 
-X_sorted <- cluster_labels_all %>%
-  select(-year, -cluster, -value)
+X_sorted <- cluster_labels_all |>
+  select(-year, -cluster, -value) |>
+  rename(atmax = avg_t_max,
+         atmin = avg_t_min,
+         nsumm = num_summer,
+         nheat = num_heat,
+         sunh = sun_h,
+         nclear = num_clear,
+         ncloud = num_cloud,
+         rh = rel_hum,
+         rhmax = rel_hum_max,
+         rhmin = rel_hum_min,
+         vwind = wind_v,
+         vw60 = num_wind_v60,
+         vwmax = wind_v_max,
+         prec = precp_sum,
+         nprec = num_precp_01)
 
 set.seed(22)
 animate_xy(as.matrix(X_sorted), 
@@ -497,11 +512,12 @@ animate_xy(as.matrix(X_sorted),
                                ellc = size_weather,
                                ellmu = mu), 
            ellipse=as.matrix(Sigma), ellc = size_weather,
-           ellmu = mu,
+           ellmu = mu, cex=2, 
            axes="bottomleft",
            col = as.factor(cluster_labels),
            palette = "Purple-Yellow",
-           center = FALSE, rescale = FALSE)
+           center = FALSE, rescale = FALSE,
+           ellmarks = FALSE, axislablong = TRUE)
 
 
 # color codes
@@ -518,8 +534,9 @@ animate_xy(X_sorted[cluster_labels == 4,],
            ellipse=as.matrix(Sigma), ellc = size_weather,
            ellmu = mu,
            axes="bottomleft",
-           col = "#5ECBBB", half_range = 7,
-           center = FALSE, rescale = FALSE)
+           col = "#5ECBBB", half_range = 7, cex = 2,
+           center = FALSE, rescale = FALSE,
+           ellmarks = FALSE, axislablong = TRUE)
 
 # extract final view, draw with new axis display that
 # only labels longer arrows, draw without red X
