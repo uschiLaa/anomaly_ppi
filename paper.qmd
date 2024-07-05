@@ -43,6 +43,7 @@ header-includes: |
   \newcommand\kD{$k\text{-}D$}
   \newcommand\dD{$d\text{-}D$}
   \newcommand\gD{$2\text{-}D$}
+  \newcommand\bD{$1\text{-}D$}
   \newtheorem*{theorem}{Theorem}
 ---
 
@@ -589,10 +590,10 @@ XXX SOMETHING ON WHAT THIS MEANS RELATIVE TO THE ORIGINAL EXAMPLE
 
 ## Conclusion
 
-Say something about the relationship with @directional-outlyingness and Stahel-Donoho outlyingness. This method could be implemented in the way we used to show ellipses, generate points on the surface of the irregular shape, overlay the data on this and make projections.
+This paper has provided a new projection pursuit index for comparing a sample of data against a multivariate normal reference distribution. It has also provided an analytical result for drawing \gD{} projections of the \pD{} ellipse corrsponding to the normal reference distribution. These combined provide new ways to visualise multivariate data, for this particular scenario.
 
-Difference from general outlier detection, see use of Mahalanobis distance in @filzmoser2018.
+The work is related to outlier detection methods [see, @filzmoser2018, for example], particularly those that use robust statistics, as illustrated in the weather example. Methods discussed in @directional-outlyingness and @donoho1982 describe detecting outlyingness using projections of the data. When these projections are collected and used as a large set, they define a high-dimensional confidence region of an indeterminate shape. There is no analytical definition. However, we could explore the data relative to the high-dimensional shapes using the same approach described in @sec-background. You would generate points on the surface of the irregular shape, overlay the data on this to visualise with a tour.
 
-Potential new directions.
+The methods on directional outlyingness or Stahel-Donoho outlyingness, described above, leng themselves to new potential \bD{} projection pursuit indexes. These would integrate nicely into a \bD{} projection pursuit guided tour to interactively visualise the potential outliers relative to the rest of the sample.
 
-
+Another potential direction of this work is with model-based clustering using Gaussian mixtures [@FR02], where ellipses form the basis of the model. Currently, the `mclust` software [@mclust] has the capacity to show \gD{} ellipses for two variables, or axis parallel \gD{} ellipses for \pD{}. The equations developed here for drawing the \gD{} projection of a \pD{} ellipse would provide more versatile visualisation for examining the model-based clustering fits.  
