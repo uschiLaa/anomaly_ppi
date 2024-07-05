@@ -200,7 +200,10 @@
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   pdftitle={Is this normal? A new projection pursuit index to assess a sample against a multivariate null distribution},
-  pdfauthor={Annalisa Calvi, Ursula Laa, Dianne Cook},
+  pdfauthor={Annalisa Calvi; Ursula Laa; Dianne Cook},
+  pdfkeywords={exploratory data analysis, statistical
+graphics, dimension reduction, high-dimensional visualisation, climate
+change, clinical trials},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -221,16 +224,39 @@
 \title{\bf Is this normal? A new projection pursuit index to assess a
 sample against a multivariate null distribution}
 \author{
-Annalisa Calvi, Ursula Laa, Dianne Cook\\
+Annalisa Calvi\\
+School of Mathematics, Monash University\\
+and\\Ursula Laa\\
+Institute of Statistics, University of Natural Resources and Life
+Sciences, Vienna\\
+and\\Dianne Cook\\
+Department of Econometrics and Business Statistics, Monash University\\
 }
 \maketitle
 
 \bigskip
 \bigskip
 \begin{abstract}
-
+Many data problems contain some reference or normal conditions, upon
+which to compare newly collected data. This scenario occurs in data
+collected as part of clinical trials to detect adverse events, and or
+for measuring climate change against historical norms. The data is
+typically multivariate, and often the normal ranges are specified by a
+multivariate normal distribution. The work presented in this paper
+develops methods to compare the new sample against the reference
+distribution with high-dimensional visualisation. It uses a projection
+pursuit guided tour to produce a sequence of low-dimensional projections
+steered towards those where the new sample is most different from the
+reference. A new projection pursuit index is defined, and the drawing of
+the projected ellipse is computed analytically. The methods are
+implemented in the R package, \texttt{tourr}.
 \end{abstract}
 
+\noindent%
+{\it Keywords:} exploratory data analysis, statistical
+graphics, dimension reduction, high-dimensional visualisation, climate
+change, clinical trials
+\vfill
 
 \newpage
 \spacingset{1.9} % DON'T change the spacing!
@@ -383,7 +409,7 @@ described in the next section.
 
 \section{Anomaly index}\label{sec-anomaly-index}
 
-\section{Projecting an ellipsoid}\label{projecting-an-ellipsoid}
+\subsection{Projecting an ellipsoid}\label{projecting-an-ellipsoid}
 
 A \pD{} ellipsoid corresponding to a given variance-covariance
 (\(\Sigma\)) is defined by
@@ -494,7 +520,7 @@ variance-covariance matrix.
 
 }
 
-\subcaption{\label{fig-anomaly1}Random projection.}
+\subcaption{\label{fig-anomaly1}Random projection}
 
 \end{minipage}%
 %
@@ -506,7 +532,7 @@ variance-covariance matrix.
 
 }
 
-\subcaption{\label{fig-anomaly2}Optimal projection.}
+\subcaption{\label{fig-anomaly2}Optimal projection}
 
 \end{minipage}%
 
@@ -624,7 +650,7 @@ consistent with aging, where ALP increases and ALT decreases.
 
 }
 
-\subcaption{\label{fig-liver1}Sample of female patients.}
+\subcaption{\label{fig-liver1}Sample of female patients}
 
 \end{minipage}%
 %
@@ -636,7 +662,7 @@ consistent with aging, where ALP increases and ALT decreases.
 
 }
 
-\subcaption{\label{fig-liver2}Longitudinal profile of an aging patient.}
+\subcaption{\label{fig-liver2}Longitudinal profile of an aging patient}
 
 \end{minipage}%
 

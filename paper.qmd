@@ -1,9 +1,34 @@
 ---
 title: "Is this normal? A new projection pursuit index to assess a sample against a multivariate null distribution"
-author: "Annalisa Calvi, Ursula Laa, Dianne Cook"
+author: 
+  - name: Annalisa Calvi
+    affiliations:
+      name: Monash University
+      department: School of Mathematics
+  - name: Ursula Laa
+    affiliations:
+      name: University of Natural Resources and Life Sciences, Vienna
+      department: Institute of Statistics
+    email: ursula.laa@boku.ac.at
+    ORCID: 0000-0002-0249-6439
+  - name: Dianne Cook
+    affiliations:
+      name: Monash University
+      department: Department of Econometrics and Business Statistics
+    email: dicook@monash.edu
+    ORCID: 0000-0002-3813-7155
 format:
   jasa-pdf:
     keep-tex: true    
+abstract: |
+  Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, and or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined, and the drawing of the projected ellipse is computed analytically. The methods are implemented in the R package, `tourr`. 
+keywords:
+  - exploratory data analysis
+  - statistical graphics
+  - dimension reduction
+  - high-dimensional visualisation
+  - climate change
+  - clinical trials
 bibliography: bibliography.bib  
 header-includes: | 
   \usepackage{amsmath}
@@ -238,7 +263,7 @@ Although this is flexible, this does not make it easy to guide the tour towards 
 
 ## Anomaly index {#sec-anomaly-index}
 
-## Projecting an ellipsoid
+### Projecting an ellipsoid
 
 A \pD{} ellipsoid corresponding to a given variance-covariance ($\Sigma$) is defined by 
 
@@ -321,9 +346,9 @@ animate_xy(samp, guided_anomaly_tour(anomaly_index(),
 
 ::: {#fig-anomaly layout-ncol=2}
 
-![Random projection.](images/anomaly1.png){#fig-anomaly1 width=300 align="center"}
+![Random projection](images/anomaly1.png){#fig-anomaly1 width=300 align="center"}
  
-![Optimal projection.](images/anomaly2.png){#fig-anomaly2 width=300 align="center"}
+![Optimal projection](images/anomaly2.png){#fig-anomaly2 width=300 align="center"}
 
 Two projections of simulated example data corresponding to the sample code: (a) random projection where sample is inside the 2-D ellipse, (b) optimal projection from index, showing most of the sample outside. A red cross indicates that the point is outside the p-D ellipse. The optimal projection uses mostly variables $x_4, x_5$, which is expected because these are the two directions where the sample most differs from the norm.
 :::
@@ -407,9 +432,9 @@ From the axes representation in @fig-liver (b) of this projection, we can see th
 
 ::: {#fig-liver layout-ncol=2}
 
-![Sample of female patients.](images/liver1.png){#fig-liver1 width=300 align="center"}
+![Sample of female patients](images/liver1.png){#fig-liver1 width=300 align="center"}
  
-![Longitudinal profile of an aging patient.](images/liver2.png){#fig-liver2 width=300 align="center"}
+![Longitudinal profile of an aging patient](images/liver2.png){#fig-liver2 width=300 align="center"}
 
 Two projections of simulated example data corresponding to common liver tests: (a) sample of female patients, (b) longitudinal test results for a single patient. Red cross indicates observation is outide the 4-D confidence ellipse. The female patients tend to have lower ALP and ALT than the normal range. As the patient aged, the level of ALP increases and ALT decreases.
 :::
