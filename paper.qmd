@@ -5,6 +5,8 @@ author:
     affiliations:
       name: Monash University
       department: School of Mathematics
+    email: annalisa.calvi@monash.edu
+    ORCID: 0009-0000-2977-0074
   - name: Ursula Laa
     affiliations:
       name: University of Natural Resources and Life Sciences, Vienna
