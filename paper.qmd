@@ -646,3 +646,11 @@ The work is related to outlier detection methods [see, @filzmoser2018, for examp
 The methods on directional outlyingness or Stahel-Donoho outlyingness, described above, lend themselves to new potential \bD{} projection pursuit indexes. These would integrate nicely into a \bD{} projection pursuit guided tour to interactively visualise the potential outliers relative to the rest of the sample.
 
 Another potential direction of this work is with model-based clustering using Gaussian mixtures [@FR02], where ellipses form the basis of the model. Currently, the `mclust` software [@mclust] has the capacity to show \gD{} ellipses for two variables, or axis parallel \gD{} ellipses for \pD{}. The equations developed here for drawing the \gD{} projection of a \pD{} ellipse would provide more versatile visualisation for examining the model-based clustering fits.  
+
+## Acknowledgements {-}
+
+The work of first author Calvi was supported by the ResearchFirst undergraduate research program at Monash University. German Valencia advised on the project, in relation to physics applications.
+
+The full paper, code and data to reproduce the work, are publicly available at https://github.com/uschiLaa/anomaly_ppi. 
+
+

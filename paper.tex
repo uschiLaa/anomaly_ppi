@@ -610,7 +610,7 @@ reported in \citet{lib-med-liver-norms}.
 
 The second example shows a longitudinal record of a single patient,
 measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
-tome order. The projection corresponds to the maxima from a
+time order. The projection corresponds to the maxima from a
 projection-pursuit guided tour using the anomaly index:
 
 \[
@@ -658,7 +658,7 @@ corresponding to common liver tests: (a) sample of female patients, (b)
 longitudinal test results for a single patient. Red cross indicates
 observation is outide the 4-D confidence ellipse. The female patients
 tend to have lower ALP and ALT than the normal range. As the patient
-aged, the level of ALP increases and ALT decreases.}
+ages, the level of ALP increases and ALT decreases.}
 
 \end{figure}%
 
@@ -702,13 +702,13 @@ points are most outlying. In the orthogonal direction the variables
 precipitation (prc) and number of days with maximum temperature above
 25°C (nsm) can be used to separate the clusters 2, 3 and 5. With this
 solution the two points in cluster 4 cannot be resolved, they fall
-inside the cluster. To better understand what is different for those two
+inside the ellipse. To better understand what is different for those two
 years we separately run the anomaly index for this subset, see Fig.
 Figure~\ref{fig-weather} (b). From the result we see that the maximum
 temperature is not relevant for this cluster, but that they have low
 values for the minimum temperature. We also see that there is still some
 averaging, and the preferred solution is not placing either point on the
-outside of the projected cluster.
+outside of the projected ellipse.
 
 \begin{figure}
 
@@ -814,7 +814,7 @@ of the irregular shape, overlay the data on this to visualise with a
 tour.
 
 The methods on directional outlyingness or Stahel-Donoho outlyingness,
-described above, leng themselves to new potential \bD{} projection
+described above, lend themselves to new potential \bD{} projection
 pursuit indexes. These would integrate nicely into a \bD{} projection
 pursuit guided tour to interactively visualise the potential outliers
 relative to the rest of the sample.
@@ -826,6 +826,16 @@ the capacity to show \gD{} ellipses for two variables, or axis parallel
 \gD{} ellipses for \pD{}. The equations developed here for drawing the
 \gD{} projection of a \pD{} ellipse would provide more versatile
 visualisation for examining the model-based clustering fits.
+
+\section*{Acknowledgements}\label{acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+
+The work of first author Calvi was supported by the ResearchFirst
+undergraduate research program at Monash University. German Valencia
+advised on the project, in relation to physics applications.
+
+The full paper, code and data to reproduce the work, are publicly
+available at https://github.com/uschiLaa/anomaly\_ppi.
 
 
   \bibliography{bibliography.bib}
