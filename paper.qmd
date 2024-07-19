@@ -302,11 +302,9 @@ as claimed.
 
 This means the matrix $(P^T \Sigma P)^{-1}$ is defining the ellipse in the \gD{} projection. In general $c$ could be any constant, but typically we would select it as a quantile of the $\chi^2$ distribution, so that the size of the ellipse corresponds to a selected probability.
 
-<IMAGES OF PROJECTED ELLIPSE>
-
 ### Index specification
 
-To define a measure of an interesting projection is to maximize the average Mahahlanobis distance [@mahalanobis] in the projection for a subset of points, $W$. The set of points could be chosen in different ways, but the default is those that are outside the specified ellipsoid in \pD{}. Alternatives could be to select a set of observations with the largest Mahalanobis distance, manually select observations or possibly a group of points identified via clustering of the extremes.
+To define a measure of an interesting projection is to maximize the average Mahalanobis distance [@mahalanobis] in the projection for a subset of points, $W$. The set of points could be chosen in different ways, but the default is those that are outside the specified ellipsoid in \pD{}. Alternatives could be to select a set of observations with the largest Mahalanobis distance, manually select observations or possibly a group of points identified via clustering of the extremes.
 
 The index is written as
 
