@@ -4,9 +4,11 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-  12pt]{article}
+  12pt,
+]{interact}
 
 \usepackage{amsmath,amssymb}
+\usepackage{setspace}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -115,12 +117,40 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
-\addtolength{\oddsidemargin}{-.5in}%
-\addtolength{\evensidemargin}{-1in}%
-\addtolength{\textwidth}{1in}%
-\addtolength{\textheight}{1.7in}%
-\addtolength{\topmargin}{-1in}%
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -135,6 +165,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\usepackage{orcidlink}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{float}
@@ -193,8 +224,6 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\usepackage[]{natbib}
-\bibliographystyle{agsm}
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -212,31 +241,23 @@ change, clinical trials},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+\title{Is this normal? A new projection pursuit index to assess a sample
+against a multivariate null distribution}
+\author{Annalisa Calvi$\textsuperscript{1}$, Ursula
+Laa$\textsuperscript{2}$, Dianne Cook$\textsuperscript{3}$}
 
+\thanks{CONTACT: Annalisa
+Calvi. Email: \href{mailto:annalisa.calvi@monash.edu}{\nolinkurl{annalisa.calvi@monash.edu}}. Ursula
+Laa. Email: \href{mailto:ursula.laa@boku.ac.at}{\nolinkurl{ursula.laa@boku.ac.at}}. Dianne
+Cook. Email: \href{mailto:dicook@monash.edu}{\nolinkurl{dicook@monash.edu}}. }
 \begin{document}
-
-
-\def\spacingset#1{\renewcommand{\baselinestretch}%
-{#1}\small\normalsize} \spacingset{1}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\title{\bf Is this normal? A new projection pursuit index to assess a
-sample against a multivariate null distribution}
-\author{
-Annalisa Calvi\\
-School of Mathematics, Monash University\\
-and\\Ursula Laa\\
-Institute of Statistics, University of Natural Resources and Life
-Sciences, Vienna\\
-and\\Dianne Cook\\
-Department of Econometrics and Business Statistics, Monash University\\
-}
+\captionsetup{labelsep=space}
 \maketitle
-
-\bigskip
-\bigskip
+\textsuperscript{1} School of Mathematics, Monash
+University,  \\ \textsuperscript{2} Institute of Statistics, University
+of Natural Resources and Life Sciences,
+Vienna,  \\ \textsuperscript{3} Department of Econometrics and Business
+Statistics, Monash University,  
 \begin{abstract}
 Many data problems contain some reference or normal conditions, upon
 which to compare newly collected data. This scenario occurs in data
@@ -252,38 +273,37 @@ reference. A new projection pursuit index is defined, and the drawing of
 the projected ellipse is computed analytically. The methods are
 implemented in the R package, \texttt{tourr}.
 \end{abstract}
+\begin{keywords}
+\def\sep{;\ }
+exploratory data analysis\sep statistical graphics\sep dimension
+reduction\sep high-dimensional visualisation\sep climate change\sep 
+clinical trials
+\end{keywords}
 
-\noindent%
-{\it Keywords:} exploratory data analysis, statistical
-graphics, dimension reduction, high-dimensional visualisation, climate
-change, clinical trials
-\vfill
-
-\newpage
-\spacingset{1.9} % DON'T change the spacing!
-
+\setstretch{2}
 \section{Introduction}\label{introduction}
 
 Linear projections are useful in many aspects of statistical analysis of
 multivariate data, and especially useful for visualising the data. A
 linear projection provides a dimension reduction while maintaining
-interpretability. For example, a biplot \citep{Ga71, GH96} shows the
-structure creating the maximum variance in the data, and also
-visualizing the projection matrix to learn which variables contribute to
-it. We might find clusters of outliers that were hiding in high
-dimensions.
+interpretability. For example, a biplot (Gabriel 1971; Gower and Hand
+1996) shows the structure creating the maximum variance in the data, and
+also visualizing the projection matrix to learn which variables
+contribute to it. We might find clusters of outliers that were hiding in
+high dimensions.
 
-More generally, projection pursuit \citep{FT74, JS87, Hu85} defines a
-quantitative criterion for the interestingness of a projection (a
-projection pursuit index), and searches the space of possible
-projections for the most interesting one to display. We can also define
-sequences of interpolated linear projections to better understand a
-multivariate distribution. Animating a randomly selected interpolated
-sequence of linear projections is called a grand tour
-\citep{As85, BA86b, BCAH05, CLBW06, tours2022}. The combination of these
+More generally, projection pursuit (Friedman and Tukey 1974; Jones and
+Sibson 1987; Huber 1985) defines a quantitative criterion for the
+interestingness of a projection (a projection pursuit index), and
+searches the space of possible projections for the most interesting one
+to display. We can also define sequences of interpolated linear
+projections to better understand a multivariate distribution. Animating
+a randomly selected interpolated sequence of linear projections is
+called a grand tour (Asimov 1985; Buja and Asimov 1986; Buja et al.
+2005; D. Cook et al. 2006; Lee et al. 2022). The combination of these
 two approaches would then use a projection pursuit index to select
 interesting projections, but display them via an interpolated path to
-provide context. This is called a guided tour \citep{cook1995}.
+provide context. This is called a guided tour (Dianne Cook et al. 1995).
 
 The question is whether we can use these techniques to assess new data
 samples in the context of an established normal, such as a specific
@@ -453,13 +473,12 @@ probability.
 \subsection{Index specification}\label{index-specification}
 
 To define a measure of an interesting projection is to maximize the
-average Mahahlanobis distance \citep{mahalanobis} in the projection for
-a subset of points, \(W\). The set of points could be chosen in
-different ways, but the default is those that are outside the specified
-ellipsoid in \pD{}. Alternatives could be to select a set of
-observations with the largest Mahalanobis distance, manually select
-observations or possibly a group of points identified via clustering of
-the extremes.
+average Mahahlanobis distance (Mahalanobis 1936) in the projection for a
+subset of points, \(W\). The set of points could be chosen in different
+ways, but the default is those that are outside the specified ellipsoid
+in \pD{}. Alternatives could be to select a set of observations with the
+largest Mahalanobis distance, manually select observations or possibly a
+group of points identified via clustering of the extremes.
 
 The index is written as
 
@@ -483,10 +502,10 @@ groups of observations that have similar directions of departure.
 
 \section{Implementation}\label{implementation}
 
-This is implemented in the \texttt{tourr} \citep{tourr, tourr-cran}
-package, where the projected ellipsoid can be drawn for each projection.
-The guided tour will take arguments specifying the data, and the null
-variance-covariance matrix.
+This is implemented in the \texttt{tourr} (Hadley Wickham et al. 2011;
+H. Wickham et al. 2024) package, where the projected ellipsoid can be
+drawn for each projection. The guided tour will take arguments
+specifying the data, and the null variance-covariance matrix.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -544,7 +563,7 @@ illustrate the application. Liver function tests commonly provide
 measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase
 (GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and
 alanine aminotransferase (ALT). There are normal ranges on these
-measurements reported by \citet{lib-med-liver-norms} and listed in
+measurements reported by Lala, Zubair, and Minter (2023) and listed in
 Table~\ref{tbl-liver-norms}.
 
 \begin{longtable}[]{@{}
@@ -606,7 +625,7 @@ located away from the mean. What has been typical in the past is to
 compute normal values based on tests of healthy young males. The samples
 provided for the project were all recorded on women. We see that this
 sample has slightly lower ALT and ALP, which is consistent with what is
-reported in \citet{lib-med-liver-norms}.
+reported in Lala, Zubair, and Minter (2023).
 
 The second example shows a longitudinal record of a single patient,
 measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
@@ -665,19 +684,19 @@ ages, the level of ALP increases and ALT decreases.}
 \subsection{Robust statistics: weather
 extremes}\label{robust-statistics-weather-extremes}
 
-This example is motivated by the weather data example from
-\citet{filzmoser2018}. We illustrate using the anomaly index to compare
+This example is motivated by the weather data example from Filzmoser,
+Hron, and Templ (2018). We illustrate using the anomaly index to compare
 potential outliers with a reference normal distribution that is derived
 using robust methods on the original data. The data contains 16
 numerical measurements that are averages across the three summer months
 June, July and August, reported for 68 years (1955 - 2022) (see
-\citet{filzmoser2018} for more details).
+Filzmoser, Hron, and Templ (2018) for more details).
 
 To estimate the underlying normal distribution the data is first
 centered and scaled using the median and the median absolute deviation
 (MAD), before applying the minimum covariance determinant (MCD)
-estimator \citep{rousseeuw1985multivariate} using the implementation in
-\citet{robustbase}. The MCD estimates for the mean vector and the
+estimator (Peter J. Rousseeuw 1985) using the implementation in Maechler
+et al. (2024). The MCD estimates for the mean vector and the
 variance-covariance matrix are then used to define the reference normal
 distribution.
 
@@ -685,12 +704,13 @@ Here we will consider points to be outlying if they are more than
 \(5 \sigma\) away from that mean value. With \(p=16\) this corresponds
 to a Mahalanobis distance of \(60\) or larger. This will identify \(20\)
 out of the \(68\) observations as outlying. Since these are outlying in
-different combinations of variables, as found in \citet{filzmoser2018},
-we will further separate the outlying points into clusters based on
-similarity in direction. The similarity is computed by first normalizing
-observations to have length \(1\) and then apply k-means clustering with
-Euclidean distance. We use the Dunn index \citet{dunn}, computed using
-\citet{fpc}, to select the preferred number of clusters, \(k=5\).
+different combinations of variables, as found in Filzmoser, Hron, and
+Templ (2018), we will further separate the outlying points into clusters
+based on similarity in direction. The similarity is computed by first
+normalizing observations to have length \(1\) and then apply k-means
+clustering with Euclidean distance. We use the Dunn index Halkidi,
+Batistakis, and Vazirgiannis (2002), computed using Hennig (2024), to
+select the preferred number of clusters, \(k=5\).
 
 The new anomaly index is first applied to the full dataset, such that
 the final projection will be affected by averaging distance of points in
@@ -748,19 +768,19 @@ minima.}
 \end{figure}%
 
 To compare our results to what is obtained by outlier detection methods,
-we reproduce one of the results from \citet{filzmoser2018} in
-Figure~\ref{fig-shapley}. On top we can see the cluster assignments for
-all points that we have identified as outliers using the
+we reproduce one of the results from Filzmoser, Hron, and Templ (2018)
+in Figure~\ref{fig-shapley}. On top we can see the cluster assignments
+for all points that we have identified as outliers using the
 \(p\)-dimensional Mahalanobis distance.
 
 For example we see that cluster 4 contains the years 1962 and 1996, and
-for these two years the result from \citet{filzmoser2018} also indicates
-unusually low values for the minimum teperature, while there is
-disagreement between outlyingness in other variables. Note that compared
-to the years 1965 and 1966 they have unusually low minimum temperature
-while having average values for the number of days with maximum
-temperature above 25°C, and this contrast is also captured in the
-projection.
+for these two years the result from Filzmoser, Hron, and Templ (2018)
+also indicates unusually low values for the minimum teperature, while
+there is disagreement between outlyingness in other variables. Note that
+compared to the years 1965 and 1966 they have unusually low minimum
+temperature while having average values for the number of days with
+maximum temperature above 25°C, and this contrast is also captured in
+the projection.
 
 When looking at the overall picture (Figure~\ref{fig-weather} (a)), we
 can see that the linear projection is showing the difference between
@@ -782,8 +802,8 @@ temperature.
 
 }
 
-\caption{\label{fig-shapley}Reproduction of the results from
-\citet{filzmoser2018}, showing which cells have been identified as
+\caption{\label{fig-shapley}Reproduction of the results from Filzmoser,
+Hron, and Templ (2018), showing which cells have been identified as
 outlying by their Shapley Cell Detector algorithm. Red cells indicate
 values higher than expected, blue cells values lower than expected. For
 years that have been identified as outliers in our approach we show the
@@ -800,18 +820,18 @@ the \pD{} ellipse corrsponding to the normal reference distribution.
 These combined provide new ways to visualise multivariate data, for this
 particular scenario.
 
-The work is related to outlier detection methods \citep[see,][for
-example]{filzmoser2018}, particularly those that use robust statistics,
-as illustrated in the weather example. Methods discussed in
-\citet{directional-outlyingness} and \citet{donoho1982} describe
-detecting outlyingness using projections of the data. When these
-projections are collected and used as a large set, they define a
-high-dimensional confidence region of an indeterminate shape. There is
-no analytical definition. However, we could explore the data relative to
-the high-dimensional shapes using the same approach described in
-Section~\ref{sec-background}. You would generate points on the surface
-of the irregular shape, overlay the data on this to visualise with a
-tour.
+The work is related to outlier detection methods (see, Filzmoser, Hron,
+and Templ 2018, for example), particularly those that use robust
+statistics, as illustrated in the weather example. Methods discussed in
+Peter J. Rousseeuw, Raymaekers, and Hubert (2018) and Donoho and Gasko
+(1992) describe detecting outlyingness using projections of the data.
+When these projections are collected and used as a large set, they
+define a high-dimensional confidence region of an indeterminate shape.
+There is no analytical definition. However, we could explore the data
+relative to the high-dimensional shapes using the same approach
+described in Section~\ref{sec-background}. You would generate points on
+the surface of the irregular shape, overlay the data on this to
+visualise with a tour.
 
 The methods on directional outlyingness or Stahel-Donoho outlyingness,
 described above, lend themselves to new potential \bD{} projection
@@ -820,12 +840,12 @@ pursuit guided tour to interactively visualise the potential outliers
 relative to the rest of the sample.
 
 Another potential direction of this work is with model-based clustering
-using Gaussian mixtures \citep{FR02}, where ellipses form the basis of
-the model. Currently, the \texttt{mclust} software \citep{mclust} has
-the capacity to show \gD{} ellipses for two variables, or axis parallel
-\gD{} ellipses for \pD{}. The equations developed here for drawing the
-\gD{} projection of a \pD{} ellipse would provide more versatile
-visualisation for examining the model-based clustering fits.
+using Gaussian mixtures (Fraley and Raftery 2002), where ellipses form
+the basis of the model. Currently, the \texttt{mclust} software (Scrucca
+et al. 2023) has the capacity to show \gD{} ellipses for two variables,
+or axis parallel \gD{} ellipses for \pD{}. The equations developed here
+for drawing the \gD{} projection of a \pD{} ellipse would provide more
+versatile visualisation for examining the model-based clustering fits.
 
 \section*{Acknowledgements}\label{acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
@@ -837,8 +857,137 @@ advised on the project, in relation to physics applications.
 The full paper, code and data to reproduce the work, are publicly
 available at https://github.com/uschiLaa/anomaly\_ppi.
 
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-As85}
+Asimov, D. 1985. {``{T}he {G}rand {T}our: {A} {T}ool for {V}iewing
+{M}ultidimensional {D}ata.''} \emph{SIAM Journal of Scientific and
+Statistical Computing} 6 (1): 128--43.
 
-  \bibliography{bibliography.bib}
+\bibitem[\citeproctext]{ref-BA86b}
+Buja, A., and D. Asimov. 1986. {``{G}rand {T}our {M}ethods: {A}n
+{O}utline.''} \emph{Computing Science and Statistics} 17: 63--67.
+
+\bibitem[\citeproctext]{ref-BCAH05}
+Buja, A., D. Cook, D. Asimov, and C. Hurley. 2005. {``{C}omputational
+{M}ethods for {H}igh-{D}imensional {R}otations in {D}ata
+{V}isualization.''} In \emph{Handbook of Statistics: Data Mining and
+Visualization}, edited by C. R. Rao, E. J. Wegman, and J. L. Solka,
+391--414. Amsterdam, The Netherlands: Elsevier/North-Holland.
+
+\bibitem[\citeproctext]{ref-cook1995}
+Cook, Dianne, Andreas Buja, Javier Cabrera, and Catherine Hurley. 1995.
+{``Grand Tour and Projection Pursuit.''} \emph{Journal of Computational
+and Graphical Statistics} 4 (3): 155--72.
+\url{https://doi.org/10.1080/10618600.1995.10474674}.
+
+\bibitem[\citeproctext]{ref-CLBW06}
+Cook, D., E.-K. Lee, A. Buja, and H. Wickham. 2006. {``{G}rand {T}ours,
+{P}rojection {P}ursuit {G}uided {T}ours and {M}anual {C}ontrols.''} In
+\emph{Handbook of {D}ata {V}isualization}, edited by C.-H. Chen, W.
+Härdle, and A. Unwin. Berlin: Springer.
+
+\bibitem[\citeproctext]{ref-donoho1982}
+Donoho, David L., and Miriam Gasko. 1992. {``{Breakdown Properties of
+Location Estimates Based on Halfspace Depth and Projected
+Outlyingness}.''} \emph{The Annals of Statistics} 20 (4): 1803--27.
+\url{https://doi.org/10.1214/aos/1176348890}.
+
+\bibitem[\citeproctext]{ref-filzmoser2018}
+Filzmoser, P., K. Hron, and M Templ. 2018. \emph{Applied Compositional
+Data Analysis}. Cham, Switzerland: Springer.
+\url{https://doi.org/10.1007/978-3-319-96422-5}.
+
+\bibitem[\citeproctext]{ref-FR02}
+Fraley, C., and A. E. Raftery. 2002. {``Model-Based {C}lustering,
+{D}iscriminant {A}nalysis, {D}ensity {E}stimation.''} \emph{Journal of
+the American Statistical Association} 97: 611--31.
+
+\bibitem[\citeproctext]{ref-FT74}
+Friedman, J. H., and J. W. Tukey. 1974. {``{A} {P}rojection {P}ursuit
+{A}lgorithm for {E}xploratory {D}ata {A}nalysis.''} \emph{IEEE
+Transactions on Computing C} 23: 881--89.
+
+\bibitem[\citeproctext]{ref-Ga71}
+Gabriel, K. R. 1971. {``The {B}iplot {G}raphical {D}isplay of {M}atrices
+with {A}pplications to {P}rincipal {C}omponent {A}nalysis.''}
+\emph{Biometrika} 58: 453--67.
+
+\bibitem[\citeproctext]{ref-GH96}
+Gower, J. C., and D. J. Hand. 1996. \emph{Biplots}. London: Chapman;
+Hall.
+
+\bibitem[\citeproctext]{ref-dunn}
+Halkidi, Maria, Yannis Batistakis, and Michalis Vazirgiannis. 2002.
+{``Clustering Validity Checking Methods: Part II.''} \emph{ACM SIGMOD
+Record} 31 (September). \url{https://doi.org/10.1145/601858.601862}.
+
+\bibitem[\citeproctext]{ref-fpc}
+Hennig, Christian. 2024. \emph{Fpc: Flexible Procedures for Clustering}.
+\url{https://CRAN.R-project.org/package=fpc}.
+
+\bibitem[\citeproctext]{ref-Hu85}
+Huber, P. J. 1985. {``{P}rojection {P}ursuit (with Discussion).''}
+\emph{Annals of Statistics} 13: 435--525.
+
+\bibitem[\citeproctext]{ref-JS87}
+Jones, M. C., and R. Sibson. 1987. {``{W}hat Is {P}rojection {P}ursuit?
+(With Discussion).''} \emph{Journal of the Royal Statistical Society,
+Series A} 150: 1--36.
+
+\bibitem[\citeproctext]{ref-lib-med-liver-norms}
+Lala, V., M. Zubair, and D. A. Minter. 2023. {``Liver Function Tests.''}
+\url{https://www.ncbi.nlm.nih.gov/books/NBK482489/}.
+
+\bibitem[\citeproctext]{ref-tours2022}
+Lee, Stuart, Dianne Cook, Natalia da Silva, Ursula Laa, Nicholas
+Spyrison, Earo Wang, and H. Sherry Zhang. 2022. {``The State-of-the-Art
+on Tours for Dynamic Visualization of High-Dimensional Data.''}
+\emph{WIREs Computational Statistics} 14 (4): e1573.
+\url{https://doi.org/10.1002/wics.1573}.
+
+\bibitem[\citeproctext]{ref-robustbase}
+Maechler, Martin, Peter Rousseeuw, Christophe Croux, Valentin Todorov,
+Andreas Ruckstuhl, Matias Salibian-Barrera, Tobias Verbeke, Manuel
+Koller, Eduardo L. T. Conceicao, and Maria Anna di Palma. 2024.
+\emph{Robustbase: Basic Robust Statistics}.
+\url{http://robustbase.r-forge.r-project.org/}.
+
+\bibitem[\citeproctext]{ref-mahalanobis}
+Mahalanobis, P. C. 1936. {``On the Generalised Distance in
+Statistics.''} \emph{Sankhya A} 80 (Suppl 1): 1--7.
+\url{https://doi.org/10.1007/s13171-019-00164-5}.
+
+\bibitem[\citeproctext]{ref-rousseeuw1985multivariate}
+Rousseeuw, Peter J. 1985. {``Multivariate Estimation with High Breakdown
+Point.''} \emph{Mathematical Statistics and Applications} 8 (283-297):
+37.
+
+\bibitem[\citeproctext]{ref-directional-outlyingness}
+Rousseeuw, Peter J., Jakob Raymaekers, and Mia Hubert. 2018. {``A
+Measure of Directional Outlyingness with Applications to Image Data and
+Video.''} \emph{Journal of Computational and Graphical Statistics} 27
+(2): 345--59. \url{https://doi.org/10.1080/10618600.2017.1366912}.
+
+\bibitem[\citeproctext]{ref-mclust}
+Scrucca, Luca, Chris Fraley, T. Brendan Murphy, and Adrian E. Raftery.
+2023. \emph{Model-Based Clustering, Classification, and Density
+Estimation Using {mclust} in {R}}. Chapman; Hall/CRC.
+\url{https://doi.org/10.1201/9781003277965}.
+
+\bibitem[\citeproctext]{ref-tourr}
+Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011.
+{``Tourr: {An} {R} {Package} for {Exploring} {Multivariate} {Data} with
+{Projections}.''} \emph{Journal of Statistical Software} 40 (2).
+\url{https://doi.org/10.18637/jss.v040.i02}.
+
+\bibitem[\citeproctext]{ref-tourr-cran}
+Wickham, H., D. Cook, N. Spyrison, N. Laa, H. S. Zhang, and S. Lee.
+2024. \emph{Tour Methods for Multivariate Data Visualisation}.
+\url{https://CRAN.R-project.org/package=tourr}.
+
+\end{CSLReferences}
+
 
 
 \end{document}

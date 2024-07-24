@@ -20,8 +20,10 @@ author:
     email: dicook@monash.edu
     ORCID: 0000-0002-3813-7155
 format:
-  jasa-pdf:
-    keep-tex: true    
+  tandf-pdf:
+    keep-tex: true  
+    linestretch: 2
+    fontsize: 12pt
 abstract: |
   Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, and or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined, and the drawing of the projected ellipse is computed analytically. The methods are implemented in the R package, `tourr`. 
 keywords:
