@@ -25,7 +25,7 @@ format:
     linestretch: 2
     fontsize: 12pt
 abstract: |
-  Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, and or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined, and the drawing of the projected ellipse is computed analytically. The methods are implemented in the R package, `tourr`. 
+  Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined, and the drawing of the projected ellipse is computed analytically. The methods are implemented in the R package, `tourr`. 
 keywords:
   - exploratory data analysis
   - statistical graphics
@@ -121,7 +121,7 @@ More generally, projection pursuit [@FT74;@JS87;@Hu85] defines a quantitative cr
 
 The question is whether we can use these techniques to assess new data samples in the context of an established normal, such as a specific multivariate normal distribution. In physics, the normal distribution may describe experimental results, or a global fit for a selected model, and we might want to compare to a set of other models. In medical applications, the normal distribution might summarize historic data of a healthy population and we compare it to samples from new patients. In outlier detection we might use robust measures to define the normal distribution and look for anomalies. 
 
-This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution. It is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and example use is illustrated in @sec-examples. 
+This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution. It is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and @sec-implementation describes the implementation. Example use is illustrated in @sec-examples. 
 
 ## Background {#sec-background}
 
@@ -320,7 +320,7 @@ where by default $W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(
 
 If the observations in $W$ are primarily departing from the normal range in the same direction, the index will be expected to perform well in finding this average direction. However, if the observations have very different departures from the norm, it may be useful to break them into groups, and separately optimize on these subsets. One could consider clustering these observations using angular distance to find groups of observations that have similar directions of departure.
 
-## Implementation
+## Implementation {#sec-implementation}
 
 This is implemented in the `tourr` [@tourr;@tourr-cran] package, where the projected ellipsoid can be drawn for each projection. The guided tour will take arguments specifying the data, and the null variance-covariance matrix. 
 
@@ -448,11 +448,11 @@ Two projections of simulated example data corresponding to common liver tests: (
 
 ### Robust statistics: weather extremes
 
-This example is motivated by the weather data example from @filzmoser2018. We illustrate using the anomaly index to compare potential outliers with a reference normal distribution that is derived using robust methods on the original data. The data contains 16 numerical measurements that are averages across the three summer months June, July and August, reported for 68 years (1955 - 2022) (see @filzmoser2018 for more details).
+This example is motivated by the weather data example from @MAYRHOFER2023. We illustrate using the anomaly index to compare potential outliers with a reference normal distribution that is derived using robust methods on the original data. The data contains 16 numerical measurements that are averages across the three summer months June, July and August, reported for 68 years (1955 - 2022) (see @MAYRHOFER2023 for more details).
 
 To estimate the underlying normal distribution the data is first centered and scaled using the median and the median absolute deviation (MAD), before applying the minimum covariance determinant (MCD) estimator [@rousseeuw1985multivariate] using the implementation in @robustbase. The MCD estimates for the mean vector and the variance-covariance matrix are then used to define the reference normal distribution.
 
-Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value. With $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @filzmoser2018, we will further separate the outlying points into clusters based on  similarity in direction. The similarity is computed by first normalizing observations to have length $1$ and then apply k-means clustering with Euclidean distance. We use the Dunn index @dunn, computed using @fpc, to select the preferred number of clusters, $k=5$.
+Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value. With $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @MAYRHOFER2023, we will further separate the outlying points into clusters based on  similarity in direction. The similarity is computed by first normalizing observations to have length $1$ and then apply k-means clustering with Euclidean distance. We use the Dunn index @dunn, computed using @fpc, to select the preferred number of clusters, $k=5$.
 
 The new anomaly index is first applied to the full dataset, such that the final projection will be affected by averaging distance of points in many directions, see @fig-weather (a). It provides a global picture showing where the outlying points differ from the normal distribution. We can see that the contrast between maximum (atmx) and minimum (atmn) temperature is primarily used in the direction where points are most outlying. In the orthogonal direction the variables precipitation (prc) and number of days with maximum temperature above 25°C (nsm) can be used to separate the clusters 2, 3 and 5. With this solution the two points in cluster 4 cannot be resolved, they fall inside the ellipse. To better understand what is different for those two years we separately run the anomaly index for this subset, see @fig-weather (b). From the result we see that the maximum temperature is not relevant for this cluster, but that they have low values for the minimum temperature. We also see that there is still some averaging, and the preferred solution is not placing either point on the outside of the projected ellipse.
 
@@ -582,9 +582,9 @@ animate_xy(X_sorted[cluster_labels == 4,],
 Examining weather anomalies using projections identified by the anomaly index: (a) computed on all outlying points, (b) computed only for cluster 4. In (a) the outlying points are somewhat orthogonal to the normal ellipse, which is primarily using the temperature min (`atmn`) and max (`atmx`) variables. In (b) the two observations are primarily extreme in the minimum temperature (`atmn`) variable, and have lower than normal minima.
 :::
 
-To compare our results to what is obtained by outlier detection methods, we reproduce one of the results from @filzmoser2018 in @fig-shapley. On top we can see the cluster assignments for all points that we have identified as outliers using the $p$-dimensional Mahalanobis distance.
+To compare our results to what is obtained by outlier detection methods, we reproduce one of the results from @MAYRHOFER2023 in @fig-shapley. On top we can see the cluster assignments for all points that we have identified as outliers using the $p$-dimensional Mahalanobis distance.
 
-For example we see that cluster 4 contains the years 1962 and 1996, and for these two years the result from @filzmoser2018 also indicates unusually low values for the minimum teperature, while there is disagreement between outlyingness in other variables. Note that compared to the years 1965 and 1966 they have unusually low minimum temperature while having average values for the number of days with maximum temperature above 25°C, and this contrast is also captured in the projection.
+For example we see that cluster 4 contains the years 1962 and 1996, and for these two years the result from @MAYRHOFER2023 also indicates unusually low values for the minimum teperature, while there is disagreement between outlyingness in other variables. Note that compared to the years 1965 and 1966 they have unusually low minimum temperature while having average values for the number of days with maximum temperature above 25°C, and this contrast is also captured in the projection.
 
 When looking at the overall picture (@fig-weather (a)), we can see that the linear projection is showing the difference between minimum and maximum temperature, which is where clusters are outlying in different directions. The direction of cluster 1 is where the average maximum temperature is unusually higher compared to the minimum temperature, while clusters 3 corresponds to years where the minimum temperature is unusually close to the maximum temperature. This combined information cannot be resolved with the cell detection algorithm, but we see that for example the most recent years (cluster 3) were tagged for having unusually high values for both the minimum and the maximum temperature.
 
@@ -634,14 +634,14 @@ ggsave("images/weather3.png", p, "png", bg = "white",
  
 
 
-Reproduction of the results from @filzmoser2018, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment at the top.
+Reproduction of the results from @MAYRHOFER2023, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment at the top.
 :::
 
 ## Conclusion
 
 This paper has provided a new projection pursuit index for comparing a sample of data against a multivariate normal reference distribution. It has also provided an analytical result for drawing \gD{} projections of the \pD{} ellipse corrsponding to the normal reference distribution. These combined provide new ways to visualise multivariate data, for this particular scenario.
 
-The work is related to outlier detection methods [see, @filzmoser2018, for example], particularly those that use robust statistics, as illustrated in the weather example. Methods discussed in @directional-outlyingness and @donoho1982 describe detecting outlyingness using projections of the data. When these projections are collected and used as a large set, they define a high-dimensional confidence region of an indeterminate shape. There is no analytical definition. However, we could explore the data relative to the high-dimensional shapes using the same approach described in @sec-background. You would generate points on the surface of the irregular shape, overlay the data on this to visualise with a tour.
+The work is related to outlier detection methods [see, @MAYRHOFER2023, for example], particularly those that use robust statistics, as illustrated in the weather example. Methods discussed in @directional-outlyingness and @donoho1982 describe detecting outlyingness using projections of the data. When these projections are collected and used as a large set, they define a high-dimensional confidence region of an indeterminate shape. There is no analytical definition. However, we could explore the data relative to the high-dimensional shapes using the same approach described in @sec-background. You would generate points on the surface of the irregular shape, overlay the data on this to visualise with a tour.
 
 The methods on directional outlyingness or Stahel-Donoho outlyingness, described above, lend themselves to new potential \bD{} projection pursuit indexes. These would integrate nicely into a \bD{} projection pursuit guided tour to interactively visualise the potential outliers relative to the rest of the sample.
 
@@ -651,6 +651,8 @@ Another potential direction of this work is with model-based clustering using Ga
 
 The work of first author Calvi was supported by the ResearchFirst undergraduate research program at Monash University. German Valencia advised on the project, in relation to physics applications.
 
+## Supplementary Materials {-}
 The full paper, code and data to reproduce the work, are publicly available at https://github.com/uschiLaa/anomaly_ppi. 
 
+## References {-}
 
