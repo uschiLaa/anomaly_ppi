@@ -289,34 +289,34 @@ What would be better, and what is developed in this paper, is to analytically de
 ## Anomaly index {#sec-anomaly-index}
 
 ### Projecting an ellipsoid
-Let \(\mathbfit{x}\) be a \(p\) dimensional vector. A \pD{} ellipsoid corresponding to a given
-variance-covariance (\(\Sigma\)) is described by the equation
+Let $\mathbfit{x}$ be a \pD{} vector. A \pD{} ellipsoid corresponding to a given
+variance-covariance ($\Sigma$) is described by the equation
 
 \begin{equation}
 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = c^2
 \label{eq:pd}
 \end{equation}
 
-where \(c\) is a constant that depends on a specific confidence level.
+where $c$ is a constant that depends on a specific confidence level.
 
-Let \(P\) be a \((p\times 2)\) matrix, whose columns form an orthonormal basis for the \gD{} projection space. Let \(\mathbfit{y}\) be a 2 dimensional vector, and let \(\mathbfit{\mu}_p := \mathbfit{\mu} P\) denote the projected mean.
+Let $P$ be a ($p\times 2$) matrix, whose columns form an orthonormal basis for the \gD{} projection space. Let $\mathbfit{y}$ be a \gD{} vector, and let $\mathbfit{\mu}_p := \mathbfit{\mu} P$ denote the projected mean.
 \begin{theorem}
-  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by \(P\) has the equation
+  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.
 \end{equation}
 \end{theorem}
 \begin{proof}
-The projection of a hyperellipsoid onto \gD{} space is an ellipse. The boundary of this \gD{} ellipse is the orthogonal projection of select points on the boundary of the hyperellipsoid. For \(\mathbfit{x}\) on the hyperellipsoid, its orthogonal projection \(\mathbfit{x}P\) is on the boundary of the projected ellipse if and only if the tangent plane to the hyperellipsoid at \(\mathbfit{x}\) is perpendicular to the projection plane described by \(P\). As the hyperellipsoid is a level curve, described by Equation~(\ref{eq:pd}), this means the gradient of the left hand side of Equation~(\ref{eq:pd}) at \(\mathbfit{x}\) is parallel to the projection plane. Note that any vector parallel to the projection plane can be expressed as \(2\mathbfit{s}P^T\) for some \(\mathbfit{s} \in \mathbb{R}^2\).
+The projection of a hyperellipsoid onto \gD{} space is an ellipse. The boundary of this \gD{} ellipse is the orthogonal projection of select points on the boundary of the hyperellipsoid. For $\mathbfit{x}$ on the hyperellipsoid, its orthogonal projection $\mathbfit{x}P$ is on the boundary of the projected ellipse if and only if the tangent plane to the hyperellipsoid at $\mathbfit{x}$ is perpendicular to the projection plane described by $P$. As the hyperellipsoid is a level curve, described by Equation~(\ref{eq:pd}), this means the gradient of the left hand side of Equation~(\ref{eq:pd}) at $\mathbfit{x}$ is parallel to the projection plane. Note that any vector parallel to the projection plane can be expressed as $2\mathbfit{s}P^T$ for some $\mathbfit{s} \in \mathbb{R}^2$.
 
-Therefore, the boundary of the ellipse consists of the points \(\mathbfit{x}P\) for which $\mathbfit{x}$ satisfies
+Therefore, the boundary of the ellipse consists of the points $\mathbfit{x}P$ for which $\mathbfit{x}$ satisfies
 
 \begin{equation}
 2\mathbfit{s}P^T = \nabla \left[(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T\right] = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}
 \label{eq:grad}
 \end{equation}
 
-for some \(\mathbfit{s} \in \mathbb{R}^2\). Rearranging this equation gives \(\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma\).
+for some $\mathbfit{s} \in \mathbb{R}^2$. Rearranging this equation gives $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
 Making this substitution in Equation~(\ref{eq:pd}) yields
 
 \begin{equation}
@@ -324,7 +324,7 @@ c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T =
 \label{eq:c2}
 \end{equation}
 
-We denote points on the boundary of the projected ellipse by \(\mathbfit{y}\), so that \(\mathbfit{y} = \mathbfit{x}P\) for some \(\mathbfit{x}\) satifying Equation~(\ref{eq:grad}). Then, as \(\mathbfit{\mu}_p = \mathbfit{\mu} P\) by definition, \(\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P\), again substituting \(\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma\). We then substitute \((\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}\) for \(\mathbfit{s}\) in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
+We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satifying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
 
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2
@@ -333,9 +333,9 @@ We denote points on the boundary of the projected ellipse by \(\mathbfit{y}\), s
 as claimed.
 \end{proof}
 
-This means the matrix \((P^T \Sigma P)^{-1}\) defines the ellipse in
-the \gD{} projection. In general \(c\) could be any constant, but
-typically we would select it as a quantile of the \(\chi^2\)
+This means the matrix $(P^T \Sigma P)^{-1}$ defines the ellipse in
+the \gD{} projection. In general $c$ could be any constant, but
+typically we would select it as a quantile of the $\chi^2$
 distribution, so that the size of the ellipse corresponds to a selected
 probability.
 
@@ -664,7 +664,7 @@ ggsave("images/weather3.png", p, "png", bg = "white",
 
 ::: {#fig-shapley}
 
-![](images/weather3.png){#fig-weather3 width=600 align="center"}
+![](images/weather3.png){#fig-weather3 width=550 align="center"}
  
 
 

@@ -467,7 +467,7 @@ different projections of the \fD{} points.)
 
 While this is a flexible and useful approach, there are two problems:
 (1) the ragged edges of the points marking the projected ellipse make it
-difficult to compare the new sample precisely against the normal ranges,
+difficult to compare the new sample precisely against acceptable ranges,
 and (2) there is no projection pursuit index that can guide the tour
 towards the directions (projections) where the samples are most
 different from the reference.
@@ -484,31 +484,38 @@ next section.
 
 \subsection{Projecting an ellipsoid}\label{projecting-an-ellipsoid}
 
-Let \(x\) be a \pD{} vector. A \pD{} ellipsoid corresponding to a given
-variance-covariance (\(\Sigma\)) is defined by
+Let \(\mathbfit{x}\) be a \pD{} vector. A \pD{} ellipsoid corresponding
+to a given variance-covariance (\(\Sigma\)) is described by the equation
 
 \begin{equation}
 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = c^2
 \label{eq:pd}
 \end{equation}
 
-where \(c\) a constant that depends on a specific confidence level.
+where \(c\) is a constant that depends on a specific confidence level.
+
+Let \(P\) be a (\(p\times 2\)) matrix, whose columns form an orthonormal
+basis for the \gD{} projection space. Let \(\mathbfit{y}\) be a \gD{}
+vector, and let \(\mathbfit{\mu}_p := \mathbfit{\mu} P\) denote the
+projected mean.
 
 \begin{theorem}
-  The projection of this \pD{} ellipsoid in \gD{} has the equation
+  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.
 \end{equation}
 \end{theorem}
 \begin{proof}
-The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. That is, the curve 
-consists of $\mathbfit{x}$ satisfying
+The projection of a hyperellipsoid onto \gD{} space is an ellipse. The boundary of this \gD{} ellipse is the orthogonal projection of select points on the boundary of the hyperellipsoid. For $\mathbfit{x}$ on the hyperellipsoid, its orthogonal projection $\mathbfit{x}P$ is on the boundary of the projected ellipse if and only if the tangent plane to the hyperellipsoid at $\mathbfit{x}$ is perpendicular to the projection plane described by $P$. As the hyperellipsoid is a level curve, described by Equation~(\ref{eq:pd}), this means the gradient of the left hand side of Equation~(\ref{eq:pd}) at $\mathbfit{x}$ is parallel to the projection plane. Note that any vector parallel to the projection plane can be expressed as $2\mathbfit{s}P^T$ for some $\mathbfit{s} \in \mathbb{R}^2$.
 
-\begin{equation}\nabla (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
+Therefore, the boundary of the ellipse consists of the points $\mathbfit{x}P$ for which $\mathbfit{x}$ satisfies
+
+\begin{equation}
+2\mathbfit{s}P^T = \nabla \left[(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T\right] = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}
+\label{eq:grad}
 \end{equation}
 
-for some $\mathbfit{s} \in \mathbb{R}^2$, where $P$ is a $(p\times 2)$ orthonormal basis defining the
-projection. We can write $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
+for some $\mathbfit{s} \in \mathbb{R}^2$. Rearranging this equation gives $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
 Making this substitution in Equation~(\ref{eq:pd}) yields
 
 \begin{equation}
@@ -516,7 +523,7 @@ c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T =
 \label{eq:c2}
 \end{equation}
 
-We call points in the projection that are on the curve $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for $\mathbfit{x}$ on the \pD{} curve. Then $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, where $\mathbfit{\mu}_p = \mathbfit{\mu} P$ is the projected mean. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
+We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satifying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
 
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2
@@ -525,11 +532,10 @@ We call points in the projection that are on the curve $\mathbfit{y}$, so that $
 as claimed.
 \end{proof}
 
-This means the matrix \((P^T \Sigma P)^{-1}\) is defining the ellipse in
-the \gD{} projection. In general \(c\) could be any constant, but
-typically we would select it as a quantile of the \(\chi^2\)
-distribution, so that the size of the ellipse corresponds to a selected
-probability.
+This means the matrix \((P^T \Sigma P)^{-1}\) defines the ellipse in the
+\gD{} projection. In general \(c\) could be any constant, but typically
+we would select it as a quantile of the \(\chi^2\) distribution, so that
+the size of the ellipse corresponds to a selected probability.
 
 \subsection{Index specification}\label{index-specification}
 
@@ -857,7 +863,7 @@ temperature.
 
 \centering{
 
-\includegraphics[width=6.25in,height=\textheight,keepaspectratio]{images/weather3.png}
+\includegraphics[width=5.72917in,height=\textheight,keepaspectratio]{images/weather3.png}
 
 }
 
