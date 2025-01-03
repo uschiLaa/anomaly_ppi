@@ -43,14 +43,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -70,7 +84,7 @@
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
@@ -80,7 +94,7 @@
 \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
 \newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
@@ -106,15 +120,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -179,6 +195,7 @@
 \newcommand\dD{$d\text{-}D$}
 \newcommand\gD{$2\text{-}D$}
 \newcommand\bD{$1\text{-}D$}
+\newcommand\fD{$4\text{-}D$}
 \newtheorem*{theorem}{Theorem}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -221,9 +238,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -240,6 +255,7 @@ change, clinical trials},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
+
 
 \title{Is this normal? A new projection pursuit index to assess a sample
 against a multivariate null distribution}
@@ -269,9 +285,11 @@ develops methods to compare the new sample against the reference
 distribution with high-dimensional visualisation. It uses a projection
 pursuit guided tour to produce a sequence of low-dimensional projections
 steered towards those where the new sample is most different from the
-reference. A new projection pursuit index is defined, and the drawing of
-the projected ellipse is computed analytically. The methods are
-implemented in the R package, \texttt{tourr}.
+reference. A new projection pursuit index is defined for this purpose.
+The tour visualisation also includes drawing of the projected ellipse,
+which is computed analytically, corresponding to the reference
+distribution. The methods are implemented in the R package,
+\texttt{tourr}.
 \end{abstract}
 \begin{keywords}
 \def\sep{;\ }
@@ -279,6 +297,7 @@ exploratory data analysis\sep statistical graphics\sep dimension
 reduction\sep high-dimensional visualisation\sep climate change\sep 
 clinical trials
 \end{keywords}
+
 
 \setstretch{2}
 \section{Introduction}\label{introduction}
@@ -309,84 +328,84 @@ The question is whether we can use these techniques to assess new data
 samples in the context of an established normal, such as a specific
 multivariate normal distribution. In physics, the normal distribution
 may describe experimental results, or a global fit for a selected model,
-and we might want to compare to a set of other models. In medical
+and we might want to compare to sets of other models. In medical
 applications, the normal distribution might summarize historic data of a
 healthy population and we compare it to samples from new patients. In
 outlier detection we might use robust measures to define the normal
 distribution and look for anomalies.
 
-This paper describes a new projection pursuit index which is optimized
-by projections where a new sample is most distant from the existing
-normal distribution.
-\textcolor{red}{This is a new development, since no existing method can compare to a reference distribution. However, the new approach can also be applied to outlier detection when we estimate the reference normal distribution from the data using robust measures. Classical methods to detect outliers with projection pursuit are based on skewness (Loperfido) (even the classical indexes were supposed to detect outliers I think?).... also dobin package by Sevvandi might be relevant here. XXX when/why might it be better to use our method?}
+This paper describes a new projection pursuit index to find projections
+where a new sample is most distant from the existing normal
+distribution, that is integrated with the guided tour to visualise the
+ways that the data departs from the reference distribution. This work
+also expands on current outlier detection methods such as
+Kandanaarachchi and Hyndman (2021) and Loperfido (2018) by providing
+integrated multivariate visualisation to examine the outlyingness in
+different projections. It also provides the ability to examine potential
+outliers interactively - when they are outlying in different ways it can
+interfere with detection numerically, but visually one might group
+different types of outlyingness, and operate the outlier detection on
+subsets.
 
-It is organised as follows. Section~\ref{sec-background} provides more
-context for the methods and visualisation.
+The paper is organised as follows. Section~\ref{sec-background} provides
+more context for the methods and visualisation.
 Section~\ref{sec-anomaly-index} provides the details of the new index,
-and Section~\ref{sec-implementation} describes the implementation.
-Example use is illustrated in Section~\ref{sec-examples}.
+and rendering projections of the reference ellipse.
+Section~\ref{sec-implementation} describes the implementation. Two
+examples, one medical and one on climate extremes, illustrate usage in
+Section~\ref{sec-examples}.
 
 \section{Background}\label{sec-background}
 
-To compare a new sample with an existing norm, like a multivariate
-normal distribution, in higher than two dimensions, we have typically
-used two samples of points. The norm is represented by points on the
-surface of a \(p\)-dimensional ellipsoid, corresponding to a confidence
-level. A sample of points on a \(p\)-dimensional ellipsoid is generated
-by
+Following the ideas expressed in Cook and Swayne (2007), to compare a
+new sample with an existing norm, like a multivariate normal
+distribution, in higher than two dimensions, you would use two samples
+of points. The norm is represented by points on the surface of a
+\(p\)-dimensional ellipsoid, with size corresponding to a chosen level
+curve of the density function of the reference distribution. This can be
+generated using these steps:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Simulating a sample of observations (\(\mathbfit{x}\), which are \pD{}
+  Simulate a sample of observations (\(\mathbfit{x}\), which are \pD{}
   vectors) from \(N_p(\mathbfit{\mu}, \Sigma)\).
 \item
-  Transforming each observation to have unit distance from the mean,
+  Transform each observation to have unit distance from the mean,
   \(\frac{\mathbfit{x}^\top}{||\mathbfit{x}^\top||}\). The sample is now
   uniform on the surface of the hypersphere.
 \item
   Transform the shape from a sphere to an ellipsoid using the specific
-  variance covariance, and shift to center on the mean vector.
-\end{enumerate}
-
-Finally, new observations can be visually compared with this ellipsoid
-by
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{3}
-\tightlist
+  variance-covariance.
 \item
-  plotting them together.
+  Shift the resulting sample to center it on the mean vector, and resize
+  to correspond to the desired density level. This could also be treated
+  like a confidence ellipse, where observations outside are more than,
+  say, three standard deviations from the sample mean.
 \end{enumerate}
 
-Figure~\ref{fig-ci} illustrates this process for \gD. This is easiest
-way to view this normal region relative to a new sample for any \pD{}
-problem.
+New observations can be visually compared with this ellipsoid by
+plotting them together using a tour. Figure~\ref{fig-ci} illustrates
+this process for \gD.
 
 \begin{figure}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-ci-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-ci-1.pdf}
 
 }
 
 \caption{\label{fig-ci}Simulating a uniform sample on a sphere involves
 sampling from a multivariate normal (a) and transforming each
-observation to have length equal to 1 (b). A confidence ellipsoid is
-generated by transforming the sphere relative to a specified
-variance-covariance matrix (c), and new observations can be visually
-assessed to be inside or outside by plotting with the ellipsoid (d).}
+observation to have length equal to 1 (b). A 95\% confidence ellipsoid
+is generated by transforming the sphere relative to a specified
+variance-covariance matrix, and sizing using a critical value (c), and
+new observations (triangle, square) can be visually assessed to be
+inside or outside by plotting with the ellipsoid (d).}
 
 \end{figure}%
-
-For example, Figure~\ref{fig-compare} compares a new sample of patient
-scores against the normal range represented by an ellipse (a) and also
-against a simulated sample of normal patients (b). While these are
-useful approaches, the ragged edges of the projected ellipse make it
-difficult to compare the new sample precisely agains the normal ranges.
 
 \begin{figure}
 
@@ -394,11 +413,11 @@ difficult to compare the new sample precisely agains the normal ranges.
 
 \centering{
 
-\includegraphics[width=2.60417in,height=\textheight]{images/example1.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/example1.png}
 
 }
 
-\subcaption{\label{fig-compare1}Relative to confidence ellipse.}
+\subcaption{\label{fig-compare1}Reference ellipse}
 
 \end{minipage}%
 %
@@ -406,64 +425,90 @@ difficult to compare the new sample precisely agains the normal ranges.
 
 \centering{
 
-\includegraphics[width=2.60417in,height=\textheight]{images/example2.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/example2.png}
 
 }
 
-\subcaption{\label{fig-compare}Relative to normal patients.}
+\subcaption{\label{fig-compare}Reference sample}
 
 \end{minipage}%
 
-\caption{\label{fig-compare}Illustration of current procedure: (a)
-compare new sample with points of the surface of a \(p\text{-}D\)
-ellipse, (b) compare new sample with a simulated sample of normal
-patients. Although both approaches are useful, the rough edges of the
-projected ellipse points makes it difficult to precisely assess the
-positions of the new sample against the normal bounds.}
+\caption{\label{fig-compare}Illustration of existing procedures for a
+\(4\text{-}D\) problem: compare new sample with (a) points on the
+surface of a \(p\text{-}D\) ellipse representing the reference
+distribution, (b) a sample of observations simulated from the reference
+distribution. A single \(2\text{-}D\) projection from a tour. (The
+circle and projected axes represent projection coefficients, and
+animated gifs of these tours are available in the supplementary
+material.) Both approaches are useful, but need the refinements
+described in this paper.}
 
 \end{figure}%
 
-Although this is flexible, this does not make it easy to guide the tour
+This approach for comparing new observations with a reference
+distribution can be applied to any \pD{} problem.
+Figure~\ref{fig-compare} illustrates the procedures for a \fD{} problem.
+The new sample of observations is compared against the reference
+distribution in two ways (a) against a \fD{} ellipse corresponding to a
+level curve of density function of the reference distribution and (b)
+against a sample simulated from the reference distribution. Here we show
+a single \gD{} projection from a tour of the full \pD{}. The circle and
+line segments indicate the coefficients of the \(4\times 2\) basis used
+to project the data in these plots. The difference between the new
+sample of points (dark/red) from the sample is in the bottom left to top
+right direction, corresponding mostly to the V3 axis direction. Roughly
+orthogonal to this is a combination of V1 and V2, so the difference
+between new and reference as indicated by this projection is due to V4
+contrasted with V1 and V2. The ellipse makes it clearer see but the
+sample can be useful, too, particularly if the reference distribution is
+not a multivariate distribution. (The supplementary material includes
+animated gifs showing these data in a tour, allowing one to see many
+different projections of the \fD{} points.)
+
+While this is a flexible and useful approach, there are two problems:
+(1) the ragged edges of the points marking the projected ellipse make it
+difficult to compare the new sample precisely against the normal ranges,
+and (2) there is no projection pursuit index that can guide the tour
 towards the directions (projections) where the samples are most
-different from the normal. What would be desirable is to analytically
-define the confidence ellipsoid, flag observations that are outside,
-steer the tour to projections that reveal the extent of the difference.
-And also display the projected ellipsoid as a geometric shape rather
-than a sample of points. These are the procedures that are described in
-the next section.
+different from the reference.
+
+What would be better, and what is developed in this paper, is to
+analytically define the confidence ellipsoid and display the projected
+ellipsoid as a geometric shape rather than a sample of points. Further,
+a new projection pursuit index that is based on flagging observations
+that are outside, and would steer the tour to projections that reveal
+the extent of the difference. These new procedures are described in the
+next section.
 
 \section{Anomaly index}\label{sec-anomaly-index}
 
 \subsection{Projecting an ellipsoid}\label{projecting-an-ellipsoid}
 
-Let \(\mathbfit{x}\) be a \(p\) dimensional vector. A \pD{} ellipsoid corresponding to a given
-variance-covariance (\(\Sigma\)) is described by the equation
+Let \(x\) be a \pD{} vector. A \pD{} ellipsoid corresponding to a given
+variance-covariance (\(\Sigma\)) is defined by
 
 \begin{equation}
 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = c^2
 \label{eq:pd}
 \end{equation}
 
-where \(c\) is a constant that depends on a specific confidence level.
+where \(c\) a constant that depends on a specific confidence level.
 
-Let \(P\) be a \((p\times 2)\) matrix, whose columns form an orthonormal basis for the \gD{} projection space. Let \(\mathbfit{y}\) be a 2 dimensional vector, and let \(\mathbfit{\mu}_p := \mathbfit{\mu} P\) denote the projected mean.
 \begin{theorem}
-  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by \(P\) has the equation
+  The projection of this \pD{} ellipsoid in \gD{} has the equation
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.
 \end{equation}
 \end{theorem}
 \begin{proof}
-The projection of a hyperellipsoid onto \gD{} space is an ellipse. The boundary of this \gD{} ellipse is the orthogonal projection of select points on the boundary of the hyperellipsoid. For \(\mathbfit{x}\) on the hyperellipsoid, its orthogonal projection \(\mathbfit{x}P\) is on the boundary of the projected ellipse if and only if the tangent plane to the hyperellipsoid at \(\mathbfit{x}\) is perpendicular to the projection plane described by \(P\). As the hyperellipsoid is a level curve, described by Equation~(\ref{eq:pd}), this means the gradient of the left hand side of Equation~(\ref{eq:pd}) at \(\mathbfit{x}\) is parallel to the projection plane. Note that any vector parallel to the projection plane can be expressed as \(2\mathbfit{s}P^T\) for some \(\mathbfit{s} \in \mathbb{R}^2\).
+The projection of an ellipsoid onto \gD{} is an ellipse, where the curve of the ellipse is defined through the set of points $\mathbfit{x}$ for which the gradient is parallel to the projection plane. That is, the curve 
+consists of $\mathbfit{x}$ satisfying
 
-Therefore, the boundary of the ellipse consists of the points \(\mathbfit{x}P\) for which $\mathbfit{x}$ satisfies
-
-\begin{equation}
-2\mathbfit{s}P^T = \nabla \left[(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T\right] = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}
-\label{eq:grad}
+\begin{equation}\nabla (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = 2 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1} = 2\mathbfit{s}P^T
 \end{equation}
 
-for some \(\mathbfit{s} \in \mathbb{R}^2\). Rearranging this equation gives \(\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma\).
+for some $\mathbfit{s} \in \mathbb{R}^2$, where $P$ is a $(p\times 2)$ orthonormal basis defining the
+projection. We can write $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$.
 Making this substitution in Equation~(\ref{eq:pd}) yields
 
 \begin{equation}
@@ -471,7 +516,7 @@ c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T =
 \label{eq:c2}
 \end{equation}
 
-We denote points on the boundary of the projected ellipse by \(\mathbfit{y}\), so that \(\mathbfit{y} = \mathbfit{x}P\) for some \(\mathbfit{x}\) satifying Equation~(\ref{eq:grad}). Then, as \(\mathbfit{\mu}_p = \mathbfit{\mu} P\) by definition, \(\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P\), again substituting \(\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma\). We then substitute \((\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}\) for \(\mathbfit{s}\) in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
+We call points in the projection that are on the curve $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for $\mathbfit{x}$ on the \pD{} curve. Then $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, where $\mathbfit{\mu}_p = \mathbfit{\mu} P$ is the projected mean. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
 
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2
@@ -480,7 +525,7 @@ We denote points on the boundary of the projected ellipse by \(\mathbfit{y}\), s
 as claimed.
 \end{proof}
 
-This means the matrix \((P^T \Sigma P)^{-1}\) defines the ellipse in
+This means the matrix \((P^T \Sigma P)^{-1}\) is defining the ellipse in
 the \gD{} projection. In general \(c\) could be any constant, but
 typically we would select it as a quantile of the \(\chi^2\)
 distribution, so that the size of the ellipse corresponds to a selected
@@ -492,19 +537,17 @@ To define a measure of an interesting projection is to maximize the
 average Mahalanobis distance (Mahalanobis 1936) in the projection for a
 subset of points, \(W\). The set of points could be chosen in different
 ways, but the default is those that are outside the specified ellipsoid
-in \pD{}. Alternatives could be to select a set of observations with the
-largest Mahalanobis distance, manually select observations or possibly a
-group of points identified via clustering of the extremes.
+in \pD{},
+\(W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T > c^2\}\).
+Alternatives could be to select a set of observations with the largest
+Mahalanobis distance, manually select observations or possibly a group
+of points identified via clustering of the extremes.
 
-The index is written as
+We define our new index as
 
 \begin{equation}
-\sum_{\mathbfit{w} \in W} (\mathbfit{w} - \mathbfit{\mu}) P (P^T\Sigma P)^{-1}P^T(\mathbfit{w} - \mathbfit{\mu})^T
+\sum_{\mathbfit{w} \in W} (\mathbfit{w} - \mathbfit{\mu}) P (P^T\Sigma P)^{-1}P^T(\mathbfit{w} - \mathbfit{\mu})^T.
 \end{equation}
-
-where by default
-\(W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T > c^2\}\),
-is the set of observations outside the \pD{} ellipsoid.
 
 \subsection{Additional considerations}\label{additional-considerations}
 
@@ -538,7 +581,7 @@ variance-covariance matrix.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/anomaly1.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly1.png}
 
 }
 
@@ -550,7 +593,7 @@ variance-covariance matrix.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/anomaly2.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly2.png}
 
 }
 
@@ -574,23 +617,23 @@ where the sample most differs from the norm.}
 tests}\label{health-liver-function-tests}
 
 This example is motivated by a problem posed during consulting with a
-pharmaceutical company, but the data shown here is simulated, simply to
-illustrate the application. Liver function tests commonly provide
-measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase
-(GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and
-alanine aminotransferase (ALT). There are normal ranges on these
-measurements reported by Lala, Zubair, and Minter (2023) and listed in
-Table~\ref{tbl-liver-norms}.
+pharmaceutical company. The data shown here is simulated, for privacy
+purposes, but reflects the patterns seen in the clinical data. Liver
+function tests commonly provide measurements on albumin, protein,
+bilirubin, gamma-glutamyl- transferase (GGT), aspartate aminotransferase
+(AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT).
+There are normal ranges on these measurements reported by Lala, Zubair,
+and Minter (2023) and listed in Table~\ref{tbl-liver-norms}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0421}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.2000}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0421}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.2000}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}@{}}
 
 \caption{\label{tbl-liver-norms}Normal ranges provided for liver
 function tests.}
@@ -668,7 +711,7 @@ consistent with aging, where ALP increases and ALT decreases.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/liver1.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver1.png}
 
 }
 
@@ -680,7 +723,7 @@ consistent with aging, where ALP increases and ALT decreases.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/liver2.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver2.png}
 
 }
 
@@ -691,7 +734,7 @@ consistent with aging, where ALP increases and ALT decreases.
 \caption{\label{fig-liver}Two projections of simulated example data
 corresponding to common liver tests: (a) sample of female patients, (b)
 longitudinal test results for a single patient. Red cross indicates
-observation is outide the 4-D confidence ellipse. The female patients
+observation is outside the 4-D confidence ellipse. The female patients
 tend to have lower ALP and ALT than the normal range. As the patient
 ages, the level of ALP increases and ALT decreases.}
 
@@ -752,7 +795,7 @@ outside of the projected ellipse.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/weather1.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/weather1.png}
 
 }
 
@@ -764,7 +807,7 @@ outside of the projected ellipse.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/weather2.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/weather2.png}
 
 }
 
@@ -814,7 +857,7 @@ temperature.
 
 \centering{
 
-\includegraphics[width=6.25in,height=\textheight]{images/weather3.png}
+\includegraphics[width=6.25in,height=\textheight,keepaspectratio]{images/weather3.png}
 
 }
 
@@ -909,6 +952,11 @@ Cook, Dianne, Eun-Kyung Lee, Andreas Buja, and Hadley Wickham. 2006.
 {C}ontrols.''} In \emph{Handbook of {D}ata {V}isualization}, edited by
 C.-H. Chen, W. Härdle, and A. Unwin. Berlin: Springer.
 
+\bibitem[\citeproctext]{ref-CS07}
+Cook, Dianne, and Deborah F. Swayne. 2007. \emph{Interactive and Dynamic
+Graphics for Data Analysis: With {R} and {GGobi}}. Use r! New York:
+Springer-Verlag. \url{https://doi.org/10.1007/978-0-387-71762-3}.
+
 \bibitem[\citeproctext]{ref-donoho1982}
 Donoho, David L., and Miriam Gasko. 1992. {``{Breakdown Properties of
 Location Estimates Based on Halfspace Depth and Projected
@@ -952,6 +1000,12 @@ Jones, M. C., and Robin Sibson. 1987. {``{W}hat Is {P}rojection
 {P}ursuit? (With Discussion).''} \emph{Journal of the Royal Statistical
 Society, Series A} 150: 1--36.
 
+\bibitem[\citeproctext]{ref-Kandanaarachchi02012021}
+Kandanaarachchi, Sevvandi, and Rob J. Hyndman. 2021. {``Dimension
+Reduction for Outlier Detection Using DOBIN.''} \emph{Journal of
+Computational and Graphical Statistics} 30 (1): 204--19.
+https://doi.org/\url{https://doi.org/10.1080/10618600.2020.1807353}.
+
 \bibitem[\citeproctext]{ref-lib-med-liver-norms}
 Lala, Vasimahmed, Muhammad Zubair, and David A. Minter. 2023. {``Liver
 Function Tests.''} \url{https://www.ncbi.nlm.nih.gov/books/NBK482489/}.
@@ -962,6 +1016,12 @@ Spyrison, Earo Wang, and H. Sherry Zhang. 2022. {``The State-of-the-Art
 on Tours for Dynamic Visualization of High-Dimensional Data.''}
 \emph{WIREs Computational Statistics} 14 (4): e1573.
 \url{https://doi.org/10.1002/wics.1573}.
+
+\bibitem[\citeproctext]{ref-loperfido}
+Loperfido, Nicola. 2018. {``Skewness-Based Projection Pursuit: A
+Computational Approach.''} \emph{Computational Statistics \& Data
+Analysis} 120: 42--57.
+https://doi.org/\url{https://doi.org/10.1016/j.csda.2017.11.001}.
 
 \bibitem[\citeproctext]{ref-robustbase}
 Maechler, Martin, Peter J. Rousseeuw, Christophe Croux, Valentin
@@ -1010,6 +1070,7 @@ Zhang, and Stuart Lee. 2024. \emph{Tour Methods for Multivariate Data
 Visualisation}. \url{https://CRAN.R-project.org/package=tourr}.
 
 \end{CSLReferences}
+
 
 
 

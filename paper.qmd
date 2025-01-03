@@ -25,7 +25,7 @@ format:
     linestretch: 2
     fontsize: 12pt
 abstract: |
-  Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined, and the drawing of the projected ellipse is computed analytically. The methods are implemented in the R package, `tourr`. 
+  Many data problems contain some reference or normal conditions, upon which to compare newly collected data. This scenario occurs in data collected as part of clinical trials to detect adverse events, or for measuring climate change against historical norms. The data is typically multivariate, and often the normal ranges are specified by a multivariate normal distribution. The work presented in this paper develops methods to compare the new sample against the reference distribution with high-dimensional visualisation. It uses a projection pursuit guided tour to produce a sequence of low-dimensional projections steered towards those where the new sample is most different from the reference. A new projection pursuit index is defined for this purpose. The tour visualisation also includes drawing of the projected ellipse, which is computed analytically, corresponding to the reference distribution. The methods are implemented in the R package, `tourr`. 
 keywords:
   - exploratory data analysis
   - statistical graphics
@@ -48,6 +48,7 @@ header-includes: |
   \newcommand\dD{$d\text{-}D$}
   \newcommand\gD{$2\text{-}D$}
   \newcommand\bD{$1\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
   \newtheorem*{theorem}{Theorem}
 ---
 
@@ -119,34 +120,30 @@ Linear projections are useful in many aspects of statistical analysis of multiva
 
 More generally, projection pursuit [@FT74;@JS87;@Hu85] defines a quantitative criterion for the interestingness of a projection (a projection pursuit index), and searches the space of possible projections for the most interesting one to display. We can also define sequences of interpolated linear projections to better understand a multivariate distribution. Animating a randomly selected interpolated sequence of linear projections is called a grand tour [@As85;@BA86b;@BCAH05;@CLBW06;@tours2022]. The combination of these two approaches would then use a projection pursuit index to select interesting projections, but display them via an interpolated path to provide context. This is called a guided tour [@cook1995].
 
-The question is whether we can use these techniques to assess new data samples in the context of an established normal, such as a specific multivariate normal distribution. In physics, the normal distribution may describe experimental results, or a global fit for a selected model, and we might want to compare to a set of other models. In medical applications, the normal distribution might summarize historic data of a healthy population and we compare it to samples from new patients. In outlier detection we might use robust measures to define the normal distribution and look for anomalies. 
+The question is whether we can use these techniques to assess new data samples in the context of an established normal, such as a specific multivariate normal distribution. In physics, the normal distribution may describe experimental results, or a global fit for a selected model, and we might want to compare to sets of other models. In medical applications, the normal distribution might summarize historic data of a healthy population and we compare it to samples from new patients. In outlier detection we might use robust measures to define the normal distribution and look for anomalies. 
 
-This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution.
-\textcolor{red}{This is a new development, since no existing method can compare to a reference distribution. However, the new approach can also be applied to outlier detection when we estimate the reference normal distribution from the data using robust measures. Classical methods to detect outliers with projection pursuit are based on skewness (Loperfido) (even the classical indexes were supposed to detect outliers I think?).... also dobin package by Sevvandi might be relevant here. XXX when/why might it be better to use our method?}
+This paper describes a new projection pursuit index to find projections where a new sample is most distant from the existing normal distribution, that is integrated with the guided tour to visualise the ways that the data departs from the reference distribution. This work also expands on current outlier detection methods such as @Kandanaarachchi02012021 and @loperfido by providing integrated multivariate visualisation to examine the outlyingness in different projections. It also provides the ability to examine potential outliers interactively - when they are outlying in different ways it can interfere with detection numerically, but visually one might group different types of outlyingness, and operate the outlier detection on subsets.
+<!--\textcolor{red}{This is a new development, since no existing method can compare to a reference distribution. However, the new approach can also be applied to outlier detection when we estimate the reference normal distribution from the data using robust measures. Classical methods to detect outliers with projection pursuit are based on skewness (Loperfido) (even the classical indexes were supposed to detect outliers I think?).... also dobin package by Sevvandi might be relevant here. XXX when/why might it be better to use our method?}-->
 
-It is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and @sec-implementation describes the implementation. Example use is illustrated in @sec-examples. 
+The paper is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and rendering projections of the reference ellipse. @sec-implementation describes the implementation. Two examples, one medical and one on climate extremes, illustrate usage in @sec-examples. 
 
 ## Background {#sec-background}
 
-To compare a new sample with an existing norm, like a multivariate normal distribution, in higher than two dimensions, we have typically used two samples of points. The norm is represented by points on the surface of a $p$-dimensional ellipsoid, corresponding to a confidence level. A sample of points on a $p$-dimensional ellipsoid is generated by 
+Following the ideas expressed in @CS07, to compare a new sample with an existing norm, like a multivariate normal distribution, in higher than two dimensions, you would use two samples of points. The norm is represented by points on the surface of a $p$-dimensional ellipsoid, with size corresponding to a chosen level curve of the density function of the reference distribution. This can be generated using these steps: 
 
-1. Simulating a sample of observations ($\mathbfit{x}$, which are \pD{} vectors)
-from $N_p(\mathbfit{\mu}, \Sigma)$. 
-2. Transforming each observation to have unit distance from the mean, $\frac{\mathbfit{x}^\top}{||\mathbfit{x}^\top||}$. The sample is now uniform on the surface of the hypersphere.
-3. Transform the shape from a sphere to an ellipsoid using the specific variance covariance, and shift to center on the mean vector. 
+1. Simulate a sample of observations ($\mathbfit{x}$, which are \pD{} vectors) from $N_p(\mathbfit{\mu}, \Sigma)$. 
+2. Transform each observation to have unit distance from the mean, $\frac{\mathbfit{x}^\top}{||\mathbfit{x}^\top||}$. The sample is now uniform on the surface of the hypersphere.
+3. Transform the shape from a sphere to an ellipsoid using the specific variance-covariance.
+4. Shift the resulting sample to center it on the mean vector, and resize to correspond to the desired density level. This could also be treated like a confidence ellipse, where observations outside are more than, say, three standard deviations from the sample mean.
 
-Finally, new observations can be visually compared with this ellipsoid by 
-
-4. plotting them together. 
-
-@fig-ci illustrates this process for \gD. This is easiest way to view this normal region relative to a new sample for any \pD{} problem. 
+New observations can be visually compared with this ellipsoid by plotting them together using a tour. @fig-ci illustrates this process for \gD. 
 
 ```{r}
 #| echo: false
 #| label: fig-ci
 #| fig-width: 8
 #| fig-height: 2
-#| fig-cap: "Simulating a uniform sample on a sphere involves sampling from a multivariate normal (a) and transforming each observation to have length equal to 1 (b). A confidence ellipsoid is generated by transforming the sphere relative to a specified variance-covariance matrix (c), and new observations can be visually assessed to be inside or outside by plotting with the ellipsoid (d)."
+#| fig-cap: "Simulating a uniform sample on a sphere involves sampling from a multivariate normal (a) and transforming each observation to have length equal to 1 (b). A 95% confidence ellipsoid is generated by transforming the sphere relative to a specified variance-covariance matrix, and sizing using a critical value (c), and new observations (triangle, square) can be visually assessed to be inside or outside by plotting with the ellipsoid (d)."
 set.seed(717)
 d1 <- matrix(rnorm(716 * 2), ncol = 2) 
 d2 <- t(apply(d1, 1, geozoo:::l2norm_vec))
@@ -209,63 +206,85 @@ p4 <- ggplot(d4, aes(x=V1, y=V2, shape=type)) +
 p1 + p2 + p3 + p4 + plot_layout(ncol=4)
 ```
 
-For example, @fig-compare compares a new sample of patient scores against the normal range represented by an ellipse (a) and also against a simulated sample of normal patients (b). While these are useful approaches, the ragged edges of the projected ellipse make it difficult to compare the new sample precisely agains the normal ranges.
 
 ```{r}
 #| eval: false
 #| echo: false
-liver_stats <- tribble(
-  ~ALT, ~AST, ~ALP, ~albumin, ~bilirubin, ~GGT, ~protein, ~sex, ~stat,
-  5,     5,   30,      35,        0,    2, 60,   "m", "mn",
-  40,     30,  120,      50,        20,   44, 80,   "m", "mx",
-  5,     5,   30,      35,        0,    2, 60,   "f", "mn",
-  40,     30,  120,      50,        20,   70, 80,    "f", "mx"
-)
 set.seed(1158)
 norm_vc <- diag(1, 4, 4)
 norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
 for (i in 1:3)
   for (j in (i+1):4)
     norm_vc[j, i] <- norm_vc[i, j]
-colnames(norm_vc) <- c("GGT", "AST", "ALP", "ALT")
-norm_samp <- rmvnorm(500, sigma=as.matrix(norm_vc))
-colnames(norm_samp) <- c("GGT", "AST", "ALP", "ALT")
+colnames(norm_vc) <- c("V1", "V2", "V3", "V4")
+norm_samp <- rmvnorm(5000, sigma=as.matrix(norm_vc))
+colnames(norm_samp) <- c("V1", "V2", "V3", "V4")
 norm_samp <- as.data.frame(norm_samp)
-norm_ci <- gen_vc_ellipse(norm_vc) * 2
-colnames(norm_ci) <- c("GGT", "AST", "ALP", "ALT")
+norm_ci <- gen_vc_ellipse(norm_vc, n=5000) * 2
+colnames(norm_ci) <- c("V1", "V2", "V3", "V4")
 norm_ci <- as.data.frame(norm_ci)
 
 set.seed(217)
-women_vc <- norm_vc
-women_vc[1,4] <- 0.5
-women_vc[4,1] <- 0.5
-women <- rmvnorm(16, mean=c(0.3, -0.3, -1.2, -1.5),
-                 sigma = women_vc)
-colnames(women) <- c("GGT", "AST", "ALP", "ALT")
-women <- as.data.frame(women)
+new_vc <- norm_vc
+new_vc[1,4] <- 0.5
+new_vc[4,1] <- 0.5
+new <- rmvnorm(16, mean=c(0.3, -0.3, -1.2, -1.5),
+                 sigma = new_vc)
+colnames(new) <- c("V1", "V2", "V3", "V4")
+new <- as.data.frame(new)
 
-norm_plus <- bind_rows(norm_samp, women)
+norm_plus <- bind_rows(norm_samp, new)
 norm_plus <- norm_plus |>
-  mutate(type = factor(c(rep("norm", 500), rep("samp", 16))))
+  mutate(type = factor(c(rep("ref", 5000), rep("samp", 16))))
 animate_xy(norm_plus[,1:4], col=norm_plus$type)
+set.seed(114)
+tpath <- save_history(norm_plus[,1:4],
+  max = 500)
+ptcex <- ifelse(norm_plus$type == "samp", 2, 0.5)
+render_gif(norm_plus[,1:4], 
+           planned_tour(tpath),
+           display_xy(col=norm_plus$type,
+                      cex=ptcex,
+                      scale=TRUE, center=FALSE, 
+                      axes="bottomleft",
+                      half_range=5.2),
+           gif_file = "gifs/fig2b.gif",
+           frames = 500,
+           width = 400,
+           height = 400)
 
-norm_ci_plus <- bind_rows(norm_ci, women)
+norm_ci_plus <- bind_rows(norm_ci, new)
 norm_ci_plus <- norm_ci_plus |>
-  mutate(type = factor(c(rep("ci", 500), rep("samp", 16))))
+  mutate(type = factor(c(rep("ref", 5000), rep("samp", 16))))
 animate_xy(norm_ci_plus[,1:4], col=norm_ci_plus$type)
-
+ptcex <- ifelse(norm_plus$type == "samp", 2, 0.5)
+render_gif(norm_ci_plus[,1:4], 
+           planned_tour(tpath),
+           display_xy(col=norm_ci_plus$type,
+                      cex=ptcex,
+                      scale=TRUE, center=FALSE, 
+                      axes="bottomleft",
+                      half_range=5.2),
+           gif_file = "gifs/fig2a.gif",
+           frames = 500,
+           width = 400,
+           height = 400)
 ```
 
 ::: {#fig-compare layout-ncol=2}
 
-![Relative to confidence ellipse.](images/example1.png){#fig-compare1 width=250 align="center"}
+![Reference ellipse](images/example1.png){#fig-compare1 width=250 align="center"}
  
-![Relative to normal patients.](images/example2.png){#fig-compare width=250 align="center"}
+![Reference sample](images/example2.png){#fig-compare width=250 align="center"}
 
-Illustration of current procedure: (a) compare new sample with points of the surface of a $p\text{-}D$ ellipse, (b) compare new sample with a simulated sample of normal patients. Although both approaches are useful, the rough edges of the projected ellipse points makes it difficult to precisely assess the positions of the new sample against the normal bounds.
+Illustration of existing procedures for a $4\text{-}D$ problem: compare new sample with (a) points on the surface of a $p\text{-}D$ ellipse representing the reference distribution, (b) a sample of observations simulated from the reference distribution. A single $2\text{-}D$ projection from a tour. (The circle and projected axes represent projection coefficients, and animated gifs of these tours are available in the supplementary material.) Both approaches are useful, but need the refinements described in this paper.
 :::
 
-Although this is flexible, this does not make it easy to guide the tour towards the directions (projections) where the samples are most different from the normal. What would be desirable is to analytically define the confidence ellipsoid, flag observations that are outside, steer the tour to projections that reveal the extent of the difference. And also display the projected ellipsoid as a geometric shape rather than a sample of points. These are the procedures that are described in the next section.  
+This approach for comparing new observations with a reference distribution can be applied to any \pD{} problem. @fig-compare illustrates the procedures for a \fD{} problem. The new sample of observations is compared against the reference distribution in two ways (a) against a \fD{} ellipse corresponding to a level curve of density function of the reference distribution and (b) against a sample simulated from the reference distribution. Here we show a single \gD{} projection from a tour of the full \pD{}. The circle and line segments indicate the coefficients of the $4\times 2$ basis used to project the data in these plots. The difference between the new sample of points (dark/red) from the sample is in the bottom left to top right direction, corresponding mostly to the V3 axis direction. Roughly orthogonal to this is a combination of V1 and V2, so the difference between new and reference as indicated by this projection is due to V4 contrasted with V1 and V2. The ellipse makes it clearer see but the sample can be useful, too, particularly if the reference distribution is not a multivariate distribution. (The supplementary material includes animated gifs showing these data in a tour, allowing one to see many different projections of the \fD{} points.)
+
+While this is a flexible and useful approach, there are two problems: (1) the ragged edges of the points marking the projected ellipse make it difficult to compare the new sample precisely against acceptable ranges, and (2) there is no projection pursuit index that can guide the tour towards the directions (projections) where the samples are most different from the reference. 
+
+What would be better, and what is developed in this paper, is to analytically define the confidence ellipsoid and display the projected ellipsoid as a geometric shape rather than a sample of points. Further, a new projection pursuit index that is based on flagging observations that are outside, and would steer the tour to projections that reveal the extent of the difference. These new procedures are described in the next section.  
 
 ## Anomaly index {#sec-anomaly-index}
 
@@ -372,7 +391,7 @@ Two projections of simulated example data corresponding to the sample code: (a) 
 
 ### Health: liver function tests
 
-This example is motivated by a problem posed during consulting with a pharmaceutical company, but the data shown here is simulated, simply to illustrate the application. Liver function tests commonly provide measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase (GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT). There are normal ranges on these measurements reported by @lib-med-liver-norms and listed in @tbl-liver-norms. 
+This example is motivated by a problem posed during consulting with a pharmaceutical company. The data shown here is simulated, for privacy purposes, but reflects the patterns seen in the clinical data. Liver function tests commonly provide measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase (GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT). There are normal ranges on these measurements reported by @lib-med-liver-norms and listed in @tbl-liver-norms. 
 
 ```{r}
 #| label: tbl-liver-norms

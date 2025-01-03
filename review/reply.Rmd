@@ -7,23 +7,27 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-We thank the reviewers for their feedback on the paper. Since the article was submitted as a *short technical note* it is not possible to accomodate all suggestions.
+We thank the Associate editor and anonymous reviewers for the feedback on the paper. In discussion with the editor, it is agreed that becuase the article was submitted as a *short technical note* that the revision would focus on these changes only: 
 
+1. Make all the small corrections listed by Reviewer 2.
+2. Check the computational details to ensure that it is clear.
+3. Check the literature references, to ensure nothing major is missed. The reviewers didn’t suggest articles that we had missed citing. We can try to make the context clearer.
+4. Ignore the request for a broader comparison or add more examples. The two examples provided are contemporary and differ in nature, illustrating general usage.
 
 ## Reviewer 1
 
 1. Providing a more comprehensive review of existing methods would enhance the context for the proposed index.
 
-\textcolor{purple}{A comprehensive review would be beyond the scope of a short technical note, but we added additional context XXXX do this? how?}
+\textcolor{purple}{The introduction was slightly expanded, and two new references added to provide additional context.}
 
 2. A detailed comparison with existing methods, emphasizing how the new index offers improvements, would clarify the study's rationale. Including a comparative analysis with current projection pursuit methods, while highlighting the strengths and potential limitations of the proposed index, would further strengthen the paper.
 
-\textcolor{purple}{To the best of our knowledge, the proposed method is the first that allows the comparison of a reference normal distribution to observations using projection pursuit.}
+\textcolor{purple}{This is first work that allows the comparison of a reference normal distribution to observations using projection pursuit, and a projection pursuit guided tour. New text in the introduction helps clarify this.}
 
 
 3. Including additional real-world data examples would enhance the practical relevance and robustness of the findings.
 
-\textcolor{purple}{The second example in the paper is using real-world data, adding more examples would be beyond the scope of a short technical note.}
+\textcolor{purple}{The two examples used in the paper illustrate different uses of this work in practical settings. The first example uses simulated data for privacy purposes but the data reflects patterns seen in clinical data. The text has been modified to make this clear. There is no room in a short technical report to add more examples.}
 
 4. The methodology is well-explained, but providing more details on the computational aspects and potential limitations would improve reproducibility. Clarification on how to obtain and interpret the "index" results is needed. Offering more detailed descriptions of the algorithms and their implementation would aid in understanding. A deeper discussion of the practical implications of these results would add valuable context.
 
@@ -33,13 +37,13 @@ We thank the reviewers for their feedback on the paper. Since the article was su
 
 The paper's ideas are interesting, but some sections of the article are very brief and summarized, making it difficult to understand the method. Additional references to similar works are needed to better justify the main contribution of the work. It is also necessary to number the main equations and reference them in the text when appropriate. More details in the pdf.
 
-\textcolor{purple}{The description is brief, fitting the style of a short technical note. XXX check where we could be more clear...}
+\textcolor{purple}{The introduction has been expanded slightly with two more references added to provide more context. XXX check where we could be more clear...}
 
 \textcolor{purple}{We have added numbering to the main equations such that they can be referenced in the explanations, this should make the derivation easier to follow. XXX to check @Annalisa}
 
 The proposed method addresses a similar question to that of a normality test for a specific data sample, but it can also be used as a method to detect outliers—data that were generated from a distribution other than the reference multivariate normal. In this regard, what differentiates your method from similar approaches, and why do you propose it as an improvement over existing methods? I believe it would be helpful to include additional context and references on other projection pursuit contributions aimed at finding interesting projections in the same direction as your approach.
 
-\textcolor{purple}{XXX (Need to finish, add references) We have added a paragraph in the introduction discussing outlier detection with other projection pursuit index functions, including the most important references.}
+\textcolor{purple}{Done}
 
 In page 2 line 47: “This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution.” At this point, it would be beneficial to emphasize the significance of your findings and highlight the main contribution of your paper. Clarifying how your method advances the field or outperforms existing techniques will strengthen your argument and provide a clearer understanding of the value of your work.
 
@@ -51,15 +55,15 @@ Page 3 line 26: Could you explicitly define the shape transformation mentioned i
 
 Page 3 line 31: Are the new observations transformed in any way before being plotted for comparison? If so, could you clarify what kind of transformations are applied and how they impact the comparison with the reference distribution?
 
-\textcolor{purple}{XXX I think the answer should be no, there is no comparison? Only rescaling for fitting into the plotting window which would be applied to both the nex points and the ellipsoid?}
+\textcolor{purple}{The new data needs to be pre-processed in the same manner as the reference distribution. For example, if the reference distribution is scaled using means and standard deviations of historical data, these same means and standard deviations need to be used to scale the new data.  XXX Add some sentences to make this clear in the paper}
 
 Page 3 line 57: “Figure 2 compares a new sample of patient scores against the normal range”, However, there is no prior context provided for this example, making it unclear to the reader. Additionally, on page 4, you mention “normal patients” as if the reader is already familiar with the patient example. It would be helpful to introduce and explain the patient data context earlier in the paper to avoid confusion.
 
-\textcolor{purple}{XXX todo @Di}
+\textcolor{purple}{The text in section 2 has been changed to remove any specialist language. The explanation is also more detailed now.}
 
 Figure 2: The labels in the figures are not clear. In panel a), the label “ci” is confusing, and in panel b), the label “norm” may lead to confusion regarding normal patients. To enhance clarity, consider increasing the point size and applying transparency, similar to the size and transparency used in Figure 1.
 
-\textcolor{purple}{XXX todo @Di}
+\textcolor{purple}{This figure has been modified to make it clearer, and to correspond with the changed text in the section.}
 
 Section 3: The flow of the content is difficult to follow, and some equations would benefit from being described in a different order. Additionally, numbering some of the equations and referencing them in the text would significantly improve readability.
 
@@ -103,7 +107,7 @@ Page 8 Figure 3: You can justify that your method is useful for gaining insights
 
 Page 9 line 18: “There are normal ranges” maybe acceptable ranges is better
 
-\textcolor{purple}{XXX todo @Di}
+\textcolor{purple}{Done}
 
 You should move Figure 4 to page 10. In the figure caption, please correct the phrase “Red cross indicates observation is outide the 4-D confidence ellipse” to fix the spelling of “outside” and 2-D.
 
