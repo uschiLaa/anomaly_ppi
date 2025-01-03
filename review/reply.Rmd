@@ -39,7 +39,7 @@ The paper's ideas are interesting, but some sections of the article are very bri
 
 \textcolor{purple}{The introduction has been expanded slightly with two more references added to provide more context. XXX check where we could be more clear...}
 
-\textcolor{purple}{We have added numbering to the main equations such that they can be referenced in the explanations, this should make the derivation easier to follow. XXX to check @Annalisa}
+\textcolor{purple}{We have added numbering to the main equations such that they can be referenced in the explanations, this should make the derivation easier to follow. More detail has been added to the theorem and proof in section 3.}
 
 The proposed method addresses a similar question to that of a normality test for a specific data sample, but it can also be used as a method to detect outliers—data that were generated from a distribution other than the reference multivariate normal. In this regard, what differentiates your method from similar approaches, and why do you propose it as an improvement over existing methods? I believe it would be helpful to include additional context and references on other projection pursuit contributions aimed at finding interesting projections in the same direction as your approach.
 
@@ -67,7 +67,7 @@ Figure 2: The labels in the figures are not clear. In panel a), the label “ci�
 
 Section 3: The flow of the content is difficult to follow, and some equations would benefit from being described in a different order. Additionally, numbering some of the equations and referencing them in the text would significantly improve readability.
 
-\textcolor{purple}{We have numbered the main equations and now use referencing in the description. XXX check flow of content @Annalisa}
+\textcolor{purple}{We have numbered the main equations and now use referencing in the description. Segments of this section have been rewritten to include more explanation and enhance flow, and variables have been defined earlier, before they are used.}
 
 Page 4 line 57: Should include “Let x a p dimensional vector”
 
@@ -80,7 +80,7 @@ Page 5 line 7: Please number the equations and reference them in the text (for e
 
 Page 5 line 16: “Theorem. The projection of this p = D ellipsoid in 2-D has the equation” you should change “this” for “a p-D ellipsoid from equation 1” or something similar. Additionally, after the theorem, please explain the variables mu, p, P and y. While you provide some of this information in line 41 and on page 6, it would benefit from better organization for clarity. Furthermore, consider restructuring the proof to enhance its clarity.
 
-\textcolor{purple}{XXX todo @Annalisa}
+\textcolor{purple}{The ellipsoid equation is now specifically referenced in the statement of the theorem. The mentioned variables are now defined before the statement of the theorem, helping reorganise the section to improve clarity. Although the proof is not fundamentally restructured, it has been reworded with further explanation added.}
 
 Subsection 3.2 is unclear and would benefit from additional details:
 Page 6 line 34: “To define a measure of an interesting projection is to maximize the average Mahalanobis distance”, you should rephrase “is to maximize”. Additionally, since the Mahalanobis distance serves as a fundamental tool for detecting multivariate outliers, it would be beneficial to mention this and provide a definition of the distance before explaining your method. Moreover, I recommend considering a robust version of the Mahalanobis distance, as this could enhance the robustness of your analysis.
