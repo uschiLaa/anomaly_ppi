@@ -280,7 +280,7 @@ render_gif(norm_ci_plus[,1:4],
 Illustration of existing procedures for a $4\text{-}D$ problem: compare new sample with (a) points on the surface of a $p\text{-}D$ ellipse representing the reference distribution, (b) a sample of observations simulated from the reference distribution. A single $2\text{-}D$ projection from a tour. (The circle and projected axes represent projection coefficients, and animated gifs of these tours are available in the supplementary material.) Both approaches are useful, but need the refinements described in this paper.
 :::
 
-This approach for comparing new observations with a reference distribution can be applied to any \pD{} problem. @fig-compare illustrates the procedures for a \fD{} problem. The new sample of observations is compared against the reference distribution in two ways (a) against a \fD{} ellipse corresponding to a level curve of density function of the reference distribution and (b) against a sample simulated from the reference distribution. Here we show a single \gD{} projection from a tour of the full \pD{}. The circle and line segments indicate the coefficients of the $4\times 2$ basis used to project the data in these plots. The difference between the new sample of points (dark/red) from the sample is in the bottom left to top right direction, corresponding mostly to the V3 axis direction. Roughly orthogonal to this is a combination of V1 and V2, so the difference between new and reference as indicated by this projection is due to V4 contrasted with V1 and V2. The ellipse makes it clearer see but the sample can be useful, too, particularly if the reference distribution is not a multivariate distribution. (The supplementary material includes animated gifs showing these data in a tour, allowing one to see many different projections of the \fD{} points.)
+This approach for comparing new observations with a reference distribution can be applied to any \pD{} problem. @fig-compare illustrates the procedures for a \fD{} problem. The new sample of observations is compared against the reference distribution in two ways (a) against a \fD{} ellipse corresponding to a level curve of density function of the reference distribution and (b) against a sample simulated from the reference distribution. Here we show a single \gD{} projection from a tour of the full \pD{}. The circle and line segments indicate the coefficients of the $4\times 2$ basis used to project the data in these plots. The difference between the new sample of points (dark/red) from the sample is in the bottom left to top right direction, corresponding mostly to the V3 axis direction. Roughly orthogonal to this is a combination of V1 and V2, so the difference between new and reference as indicated by this projection is due to V4 contrasted with V1 and V2. The ellipse makes it clearer see but the sample can be useful, too, particularly if the reference distribution is not a multivariate normal distribution. (The supplementary material includes animated gifs showing these data in a tour, allowing one to see many different projections of the \fD{} points.)
 
 While this is a flexible and useful approach, there are two problems: (1) the ragged edges of the points marking the projected ellipse make it difficult to compare the new sample precisely against acceptable ranges, and (2) there is no projection pursuit index that can guide the tour towards the directions (projections) where the samples are most different from the reference. 
 
@@ -290,7 +290,7 @@ What would be better, and what is developed in this paper, is to analytically de
 
 ### Projecting an ellipsoid
 Let $\mathbfit{x}$ be a \pD{} vector. A \pD{} ellipsoid corresponding to a given
-variance-covariance ($\Sigma$) is described by the equation
+variance-covariance ($\Sigma$) and mean vector ($\mathbfit{\mu}$) is described by the equation
 
 \begin{equation}
 (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T = c^2
@@ -486,9 +486,9 @@ This example is motivated by the weather data example from @MAYRHOFER2023. We il
 
 To estimate the underlying normal distribution the data is first centered and scaled using the median and the median absolute deviation (MAD), before applying the minimum covariance determinant (MCD) estimator [@rousseeuw1985multivariate] using the implementation in @robustbase. The MCD estimates for the mean vector and the variance-covariance matrix are then used to define the reference normal distribution.
 
-Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value. With $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @MAYRHOFER2023, we will further separate the outlying points into clusters based on  similarity in direction. The similarity is computed by first normalizing observations to have length $1$ and then apply k-means clustering with Euclidean distance. We use the Dunn index @dunn, computed using @fpc, to select the preferred number of clusters, $k=5$.
+Here we will consider points to be outlying if they are more than $5 \sigma$ away from that mean value. With $p=16$ this corresponds to a Mahalanobis distance of $60$ or larger. This will identify $20$ out of the $68$ observations as outlying. Since these are outlying in different combinations of variables, as found in @MAYRHOFER2023, we will further separate the outlying points into clusters based on  similarity in direction. The similarity is computed by first normalizing observations to have length $1$ and then apply k-means clustering with Euclidean distance. We use the Dunn index [@dunn], computed using @fpc, to select the preferred number of clusters, $k=5$.
 
-The new anomaly index is first applied to the full dataset, such that the final projection will be affected by averaging distance of points in many directions, see @fig-weather (a). It provides a global picture showing where the outlying points differ from the normal distribution. We can see that the contrast between maximum (atmx) and minimum (atmn) temperature is primarily used in the direction where points are most outlying. In the orthogonal direction the variables precipitation (prc) and number of days with maximum temperature above 25°C (nsm) can be used to separate the clusters 2, 3 and 5. With this solution the two points in cluster 4 cannot be resolved, they fall inside the ellipse. To better understand what is different for those two years we separately run the anomaly index for this subset, see @fig-weather (b). From the result we see that the maximum temperature is not relevant for this cluster, but that they have low values for the minimum temperature. We also see that there is still some averaging, and the preferred solution is not placing either point on the outside of the projected ellipse.
+The new anomaly index is first applied to the full dataset, such that the final projection will be found by averaging distance of points in many directions, see @fig-weather (a). It provides a global picture showing where the outlying points differ from the normal distribution. We can see that the contrast between maximum (atmx) and minimum (atmn) temperature is primarily used in the direction where points are most outlying. In the orthogonal direction the variables precipitation (prc) and number of days with maximum temperature above 25°C (nsm) can be used to separate the clusters 2, 3 and 5. With this solution the two points in cluster 4 cannot be resolved, they fall inside the ellipse. To better understand what is different for those two years we separately run the anomaly index for this subset, see @fig-weather (b). From the result we see that the maximum temperature is not relevant for this cluster, but that they have low values for the minimum temperature. We also see that there is still some averaging, and the preferred solution is not placing either point on the outside of the projected ellipse.
 
 ```{r}
 #| eval: false
@@ -581,14 +581,14 @@ animate_xy(as.matrix(X_sorted),
            ellmu = mu, cex=2, 
            axes="bottomleft",
            col = as.factor(cluster_labels),
-           palette = "Purple-Yellow",
+           palette = "Batlow",
            center = FALSE, rescale = FALSE,
            ellmarks = FALSE, axislablong = TRUE)
 
 
 # color codes
-# "#80146E" "#7262B2" "#31A0C2" "#5ECBBB" "#B9E5B9"
-# "#F5F2D8"
+#"#201158" "#005260" "#007C46" "#999600" "#F9A391" "#FFCEF4"
+# "#005260"
 # wait for getting random starting planes for
 # better results
 set.seed(55)
@@ -600,7 +600,7 @@ animate_xy(X_sorted[cluster_labels == 4,],
            ellipse=as.matrix(Sigma), ellc = size_weather,
            ellmu = mu,
            axes="bottomleft",
-           col = "#5ECBBB", half_range = 7, cex = 2,
+           col = "#999600", half_range = 7, cex = 2,
            center = FALSE, rescale = FALSE,
            ellmarks = FALSE, axislablong = TRUE)
 
@@ -608,9 +608,9 @@ animate_xy(X_sorted[cluster_labels == 4,],
 
 ::: {#fig-weather layout-ncol=2}
 
-![All outlying points clustered](images/weather1.png){#fig-weather1 width=300 align="center"}
+![All outlying points clustered](images/weather1.png){#fig-weather1 width=275 align="center"}
  
-![Only cluster 4](images/weather2.png){#fig-weather2 width=300 align="center"}
+![Only cluster 4](images/weather2.png){#fig-weather2 width=275 align="center"}
 
 
 Examining weather anomalies using projections identified by the anomaly index: (a) computed on all outlying points, (b) computed only for cluster 4. In (a) the outlying points are somewhat orthogonal to the normal ellipse, which is primarily using the temperature min (`atmn`) and max (`atmx`) variables. In (b) the two observations are primarily extreme in the minimum temperature (`atmn`) variable, and have lower than normal minima.
@@ -629,6 +629,7 @@ When looking at the overall picture (@fig-weather (a)), we can see that the line
 library(ShapleyOutlier)
 Sigma_inv <- solve(MCD$cov)
 # following the package vignette to calculate SCD
+# abbreviate(str_remove_all(colnames(X), "_"), 3, named = F)
 weather_SCD <- SCD(x = X, mu, Sigma, Sigma_inv, step_size = 0.1, min_deviation = 0.2)
 weather_SCD_rescaled <- weather_SCD
 weather_SCD_rescaled$x_original <- t(apply(weather_SCD_rescaled$x_original,1, function(x) x*attr(X, "scale") + attr(X, "center")))
@@ -648,10 +649,12 @@ p <- plot(weather_SCD_rescaled, type = "cell", n_digits = 0, continuous_rowname 
             mapping = aes(x = as.numeric(year),
                                y = variable, label = value,
                           color = as.factor(value)),
-            size = 2, fontface = "bold",
+            size = 3, fontface = "bold",
             inherit.aes = F) +
-  scale_color_manual(values = c("#80146E", "#7262B2", "#31A0C2", "#5ECBBB", "#B9E5B9")) +
-  theme(legend.position = "none",
+  scale_color_manual(values = c("#201158", "#005260", "#007C46", "#999600", "#F9A391"),
+                     guide = "none") +
+  theme(
+    #legend.position = "none",
         aspect.ratio = 0.5,
         text = element_text(size = 10)) +
   scale_x_continuous(breaks = seq(1960, 2020, 5),

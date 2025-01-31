@@ -43,7 +43,7 @@ The paper's ideas are interesting, but some sections of the article are very bri
 
 The proposed method addresses a similar question to that of a normality test for a specific data sample, but it can also be used as a method to detect outliers—data that were generated from a distribution other than the reference multivariate normal. In this regard, what differentiates your method from similar approaches, and why do you propose it as an improvement over existing methods? I believe it would be helpful to include additional context and references on other projection pursuit contributions aimed at finding interesting projections in the same direction as your approach.
 
-\textcolor{purple}{Done}
+\textcolor{purple}{Done XXX mention what was changed}
 
 In page 2 line 47: “This paper describes a new projection pursuit index which is optimized by projections where a new sample is most distant from the existing normal distribution.” At this point, it would be beneficial to emphasize the significance of your findings and highlight the main contribution of your paper. Clarifying how your method advances the field or outperforms existing techniques will strengthen your argument and provide a clearer understanding of the value of your work.
 
@@ -115,15 +115,15 @@ You should move Figure 4 to page 10. In the figure caption, please correct the p
 
 Page 12: All your comments regarding the clusters are unclear because Figure 5 lacks color labels. Including these labels will help clarify your points and enhance the reader’s understanding of the clustering in the visual representation.
 
-\textcolor{purple}{XXX todo @Ursula}
+\textcolor{purple}{A color legend has been added in Figure 5a.}
 
 Page 13: In Figure 5, the selected color palette is not effective, making it difficult to distinguish the five clusters. Additionally, using white for one of the groups against a white background further complicates visibility. I recommend trying the Dark2 palette or another contrasting palette. Please also include color labels to enhance clarity and help the reader identify the different clusters easily.
 
-\textcolor{purple}{XXX todo @Ursula}
+\textcolor{purple}{We have tried a few palettes and changed the color palette to "Bartlow". Note here that "cluster" 0 are points that are not tagged as outliers, this is why we use a lighter color to de-emphasize those points in the image. The color legend has been added to the Figure.}
 
 Page 14 Figure 6, In Figure 6, please change the cluster number colors to match those in Figure 5. The cluster numbers are difficult to see, so consider increasing the font size or other option. Additionally, you should include a color legend for clarity. When describing the variables in the text, please include their code names in parentheses. Also, ensure that the variable names in Figures 5 and 6 are consistent for better coherence throughout the paper.
 
-\textcolor{purple}{XXX todo @Ursula}
+\textcolor{purple}{The colors are matched between Figure 5 and 6. We have increased the size of the cluster labels in Figure 6 to make them more readable, and have added a color legend. XXX RE variable names}
 
 Page 14 line 48: Is Shapley Cell Detector algorithm defined in Mayrofer and Filzmoser(2023)?
 
