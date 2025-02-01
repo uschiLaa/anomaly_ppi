@@ -7,7 +7,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-We thank the Associate editor and anonymous reviewers for the feedback on the paper. In discussion with the editor, it is agreed that becuase the article was submitted as a *short technical note* that the revision would focus on these changes only: 
+We thank the Associate editor and anonymous reviewers for the feedback on the paper. In discussion with the editor, it is agreed that because the article was submitted as a *short technical note* that the revision would focus on these changes only: 
 
 1. Make all the small corrections listed by Reviewer 2.
 2. Check the computational details to ensure that it is clear.
@@ -31,7 +31,7 @@ We thank the Associate editor and anonymous reviewers for the feedback on the pa
 
 4. The methodology is well-explained, but providing more details on the computational aspects and potential limitations would improve reproducibility. Clarification on how to obtain and interpret the "index" results is needed. Offering more detailed descriptions of the algorithms and their implementation would aid in understanding. A deeper discussion of the practical implications of these results would add valuable context.
 
-\textcolor{purple}{We have extended the implementation section to mention the options for optimization of the index, and have included a reference for the ferrn package that can be used to investigate index values and to compare different optimization strategies. Including such an investigation would be beyond the scope of a short technical note. All implementations are available in CRAN packages and the code to reproduce the examples are available on GitHub for full reproducibility.}
+\textcolor{purple}{We have extended the implementation section to mention the options for optimization of the index, and have included a reference for the ferrn package that can be used to investigate index values and to compare different optimization strategies. All implementations are available in CRAN packages and the code to reproduce the examples are available on GitHub for full reproducibility.}
 
 ## Reviewer 2
 
@@ -96,7 +96,7 @@ Page 6 line 37: You mentioned W but it would be beneficial to define it here. Wh
 
 \textcolor{purple}{We have moved the default definition for W to where it is first mentioned.}
 
-Page 7 subection 3.3 It would be useful to include a simulation example demonstrating how to apply the method in cases where the observations deviate from the norm in different directions. This example should illustrate how to group these observations effectively, providing readers with a clearer understanding of the practical application of your method. If you address this point later in the paper, please mention it here to guide the reader.
+Page 7 subsection 3.3 It would be useful to include a simulation example demonstrating how to apply the method in cases where the observations deviate from the norm in different directions. This example should illustrate how to group these observations effectively, providing readers with a clearer understanding of the practical application of your method. If you address this point later in the paper, please mention it here to guide the reader.
 
 \textcolor{purple}{Including a detailed simulation study is beyond the scope of a short technical note. However, the second example shows how clustering can be used in an application. This is now mentioned in Section 3.3.}
 
@@ -109,7 +109,7 @@ Page 9 line 18: “There are normal ranges” maybe acceptable ranges is better
 
 \textcolor{purple}{Done}
 
-You should move Figure 4 to page 10. In the figure caption, please correct the phrase “Red cross indicates observation is outide the 4-D confidence ellipse” to fix the spelling of “outside” and 2-D.
+You should move Figure 4 to page 10. In the figure caption, please correct the phrase “Red cross indicates observation is outside the 4-D confidence ellipse” to fix the spelling of “outside” and 2-D.
 
 \textcolor{purple}{We have moved Figure 4 up (now page 12), and fixed the spelling.}
 
@@ -123,7 +123,7 @@ Page 13: In Figure 5, the selected color palette is not effective, making it dif
 
 Page 14 Figure 6, In Figure 6, please change the cluster number colors to match those in Figure 5. The cluster numbers are difficult to see, so consider increasing the font size or other option. Additionally, you should include a color legend for clarity. When describing the variables in the text, please include their code names in parentheses. Also, ensure that the variable names in Figures 5 and 6 are consistent for better coherence throughout the paper.
 
-\textcolor{purple}{The colors are matched between Figure 5 and 6. We have increased the size of the cluster labels in Figure 6 to make them more readable, and have added a color legend. Variable nams in Figure 6 have been matched to those in Figure 5, and are now always added in parentheses when mentioned in the text.}
+\textcolor{purple}{The colors are matched between Figure 5 and 6. We have increased the size of the cluster labels in Figure 6 to make them more readable, and have added a color legend. Variable names in Figure 6 have been matched to those in Figure 5, and are now always added in parentheses when mentioned in the text.}
 
 Page 14 line 48: Is Shapley Cell Detector algorithm defined in Mayrofer and Filzmoser(2023)?
 

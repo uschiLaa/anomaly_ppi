@@ -43,14 +43,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -70,7 +84,7 @@
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
@@ -80,7 +94,7 @@
 \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
 \newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
@@ -106,15 +120,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -222,9 +238,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -241,6 +255,7 @@ change, clinical trials},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
+
 
 \title{Is this normal? A new projection pursuit index to assess a sample
 against a multivariate null distribution}
@@ -282,6 +297,7 @@ exploratory data analysis\sep statistical graphics\sep dimension
 reduction\sep high-dimensional visualisation\sep climate change\sep 
 clinical trials
 \end{keywords}
+
 
 \setstretch{2}
 \section{Introduction}\label{introduction}
@@ -379,7 +395,7 @@ during pre-processing. Figure~\ref{fig-ci} illustrates this process for
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-ci-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-ci-1.pdf}
 
 }
 
@@ -399,7 +415,7 @@ inside or outside by plotting with the ellipsoid (d).}
 
 \centering{
 
-\includegraphics[width=2.60417in,height=\textheight]{images/example1.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/example1.png}
 
 }
 
@@ -411,7 +427,7 @@ inside or outside by plotting with the ellipsoid (d).}
 
 \centering{
 
-\includegraphics[width=2.60417in,height=\textheight]{images/example2.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/example2.png}
 
 }
 
@@ -487,7 +503,7 @@ vector, and let \(\mathbfit{\mu}_p := \mathbfit{\mu} P\) denote the
 projected mean.
 
 \begin{theorem}
-  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
+  The projection of the \pD{} ellipsoid described in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.
 \end{equation}
@@ -510,7 +526,7 @@ c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T =
 \label{eq:c2}
 \end{equation}
 
-We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satifying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
+We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satisfying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
 
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2
@@ -588,7 +604,7 @@ difference from the reference distribution.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/anomaly1.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly1.png}
 
 }
 
@@ -600,7 +616,7 @@ difference from the reference distribution.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/anomaly2.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly2.png}
 
 }
 
@@ -634,20 +650,20 @@ This example is motivated by a problem posed during consulting with a
 pharmaceutical company. The data shown here is simulated, for privacy
 purposes, but reflects the patterns seen in the clinical data. Liver
 function tests commonly provide measurements on albumin, protein,
-bilirubin, gamma-glutamyl- transferase (GGT), aspartate aminotransferase
+bilirubin, gamma-glutamyl-transferase (GGT), aspartate aminotransferase
 (AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT).
 There are normal ranges on these measurements reported by Lala, Zubair,
 and Minter (2023) and listed in Table~\ref{tbl-liver-norms}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0421}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1474}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.2000}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1158}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0421}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1474}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.2000}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1158}}@{}}
 
 \caption{\label{tbl-liver-norms}Normal ranges provided for liver
 function tests.}
@@ -706,7 +722,7 @@ reported in Lala, Zubair, and Minter (2023).
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/liver1.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver1.png}
 
 }
 
@@ -718,7 +734,7 @@ reported in Lala, Zubair, and Minter (2023).
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight]{images/liver2.png}
+\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver2.png}
 
 }
 
@@ -808,7 +824,7 @@ outside of the projected ellipse.
 
 \centering{
 
-\includegraphics[width=2.86458in,height=\textheight]{images/weather1.png}
+\includegraphics[width=2.86458in,height=\textheight,keepaspectratio]{images/weather1.png}
 
 }
 
@@ -820,7 +836,7 @@ outside of the projected ellipse.
 
 \centering{
 
-\includegraphics[width=2.86458in,height=\textheight]{images/weather2.png}
+\includegraphics[width=2.86458in,height=\textheight,keepaspectratio]{images/weather2.png}
 
 }
 
@@ -851,7 +867,7 @@ all points that we have identified as outliers using the
 
 For example we see that cluster 4 contains the years 1962 and 1996, and
 for these two years the result from Mayrhofer and Filzmoser (2023) also
-indicates unusually low values for the minimum teperature (atmn), while
+indicates unusually low values for the minimum temperature (atmn), while
 there is disagreement between outlyingness in other variables. Note that
 compared to the years 1965 and 1966 they have unusually low minimum
 temperature (atmn) while having average values for the number of days
@@ -874,7 +890,7 @@ minimum (atmn) and the maximum temperature (atmx).
 
 \centering{
 
-\includegraphics[width=5.72917in,height=\textheight]{images/weather3.png}
+\includegraphics[width=5.72917in,height=\textheight,keepaspectratio]{images/weather3.png}
 
 }
 
@@ -883,7 +899,7 @@ and Filzmoser (2023), showing which cells have been identified as
 outlying by their Shapley Cell Detector algorithm (Mayrhofer and
 Filzmoser 2023). Red cells indicate values higher than expected, blue
 cells values lower than expected. For years that have been identified as
-outliers in our approach we show the cluster assignment in the last
+outliers in our approach we show the cluster assignment in the bottom
 row.}
 
 \end{figure}%
@@ -893,7 +909,7 @@ row.}
 This paper has provided a new projection pursuit index for comparing a
 sample of data against a multivariate normal reference distribution. It
 has also provided an analytical result for drawing \gD{} projections of
-the \pD{} ellipse corrsponding to the normal reference distribution.
+the \pD{} ellipse corresponding to the normal reference distribution.
 These combined provide new ways to visualise multivariate data, for this
 particular scenario.
 
@@ -1094,6 +1110,7 @@ Optimisation with Application to Guided Tours.''} \emph{The R Journal}
 13 (2): 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
 
 \end{CSLReferences}
+
 
 
 

@@ -123,7 +123,6 @@ More generally, projection pursuit [@FT74;@JS87;@Hu85] defines a quantitative cr
 The question is whether we can use these techniques to assess new data samples in the context of an established normal, such as a specific multivariate normal distribution. In physics, the normal distribution may describe experimental results, or a global fit for a selected model, and we might want to compare to sets of other models. In medical applications, the normal distribution might summarize historic data of a healthy population and we compare it to samples from new patients. In outlier detection we might use robust measures to define the normal distribution and look for anomalies. 
 
 This paper describes a new projection pursuit index to find projections where a new sample is most distant from the existing normal distribution, that is integrated with the guided tour to visualise the ways that the data departs from the reference distribution. This work also expands on current outlier detection methods such as @Kandanaarachchi02012021 and @loperfido by providing integrated multivariate visualisation to examine the outlyingness in different projections. It also provides the ability to examine potential outliers interactively - when they are outlying in different ways it can interfere with detection numerically, but visually one might group different types of outlyingness, and operate the outlier detection on subsets.
-<!--\textcolor{red}{This is a new development, since no existing method can compare to a reference distribution. However, the new approach can also be applied to outlier detection when we estimate the reference normal distribution from the data using robust measures. Classical methods to detect outliers with projection pursuit are based on skewness (Loperfido) (even the classical indexes were supposed to detect outliers I think?).... also dobin package by Sevvandi might be relevant here. XXX when/why might it be better to use our method?}-->
 
 The paper is organised as follows. @sec-background provides more context for the methods and visualisation. @sec-anomaly-index provides the details of the new index, and rendering projections of the reference ellipse. @sec-implementation describes the implementation. Two examples, one medical and one on climate extremes, illustrate usage in @sec-examples. 
 
@@ -301,7 +300,7 @@ where $c$ is a constant that depends on a specific confidence level.
 
 Let $P$ be a ($p\times 2$) matrix, whose columns form an orthonormal basis for the \gD{} projection space. Let $\mathbfit{y}$ be a \gD{} vector, and let $\mathbfit{\mu}_p := \mathbfit{\mu} P$ denote the projected mean.
 \begin{theorem}
-  The projection of the \pD{} ellipsoid decribed in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
+  The projection of the \pD{} ellipsoid described in Equation~\ref{eq:pd} onto the \gD{} projection space described by $P$ has the equation
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2.
 \end{equation}
@@ -324,7 +323,7 @@ c^2 = (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T =
 \label{eq:c2}
 \end{equation}
 
-We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satifying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
+We denote points on the boundary of the projected ellipse by $\mathbfit{y}$, so that $\mathbfit{y} = \mathbfit{x}P$ for some $\mathbfit{x}$ satisfying Equation~(\ref{eq:grad}). Then, as $\mathbfit{\mu}_p = \mathbfit{\mu} P$ by definition, $\mathbfit{y} - \mathbfit{\mu}_p = (\mathbfit{x} - \mathbfit{\mu})P = \mathbfit{s} P^T \Sigma P$, again substituting $\mathbfit{x}-\mathbfit{\mu} = \mathbfit{s} P^T \Sigma$. We then substitute $(\mathbfit{y} - \mathbfit{\mu}_p) (P^T \Sigma P)^{-1}$ for $\mathbfit{s}$ in Equation~(\ref{eq:c2}). From this we can compute the analog equation for the projection as
 
 \begin{equation}
 (\mathbfit{y} - \mathbfit{\mu}_p)(P^T \Sigma P)^{-1}(\mathbfit{y} - \mathbfit{\mu}_p)^T = c^2
@@ -409,7 +408,7 @@ To optimize the index any optimization algorithm implemented in the `tourr` pack
 
 ### Health: liver function tests
 
-This example is motivated by a problem posed during consulting with a pharmaceutical company. The data shown here is simulated, for privacy purposes, but reflects the patterns seen in the clinical data. Liver function tests commonly provide measurements on albumin, protein, bilirubin, gamma-glutamyl- transferase (GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT). There are normal ranges on these measurements reported by @lib-med-liver-norms and listed in @tbl-liver-norms. 
+This example is motivated by a problem posed during consulting with a pharmaceutical company. The data shown here is simulated, for privacy purposes, but reflects the patterns seen in the clinical data. Liver function tests commonly provide measurements on albumin, protein, bilirubin, gamma-glutamyl-transferase (GGT), aspartate aminotransferase (AST), alkaline phosphatase (ALP) and alanine aminotransferase (ALT). There are normal ranges on these measurements reported by @lib-med-liver-norms and listed in @tbl-liver-norms. 
 
 ```{r}
 #| label: tbl-liver-norms
@@ -634,7 +633,7 @@ Examining weather anomalies using the anomaly index guided tour to assess what c
 
 To compare our results to what is obtained by outlier detection methods, we reproduce one of the results from @MAYRHOFER2023 in @fig-shapley. On top we can see the cluster assignments for all points that we have identified as outliers using the $p$-dimensional Mahalanobis distance.
 
-For example we see that cluster 4 contains the years 1962 and 1996, and for these two years the result from @MAYRHOFER2023 also indicates unusually low values for the minimum teperature (atmn), while there is disagreement between outlyingness in other variables. Note that compared to the years 1965 and 1966 they have unusually low minimum temperature (atmn) while having average values for the number of days with maximum temperature above 25°C (nsm), and this contrast is also captured in the projection.
+For example we see that cluster 4 contains the years 1962 and 1996, and for these two years the result from @MAYRHOFER2023 also indicates unusually low values for the minimum temperature (atmn), while there is disagreement between outlyingness in other variables. Note that compared to the years 1965 and 1966 they have unusually low minimum temperature (atmn) while having average values for the number of days with maximum temperature above 25°C (nsm), and this contrast is also captured in the projection.
 
 When looking at the overall picture (@fig-weather (a)), we can see that the linear projection is showing the difference between minimum (atmn) and maximum temperature (atmx), which is where clusters are outlying in different directions. The direction of cluster 1 is where the average maximum temperature (atmx) is unusually higher compared to the minimum temperature (atmn), while clusters 3 corresponds to years where the minimum temperature is unusually close to the maximum temperature. This combined information cannot be resolved with the cell detection algorithm, but we see that for example the most recent years (cluster 3) were tagged for having unusually high values for both the minimum (atmn) and the maximum temperature (atmx).
 
@@ -707,12 +706,12 @@ ggsave("images/weather3.png", p, "png", bg = "white",
  
 
 
-Reproduction of the results from @MAYRHOFER2023, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm [@MAYRHOFER2023]. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment in the last row.
+Reproduction of the results from @MAYRHOFER2023, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm [@MAYRHOFER2023]. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment in the bottom row.
 :::
 
 ## Conclusion
 
-This paper has provided a new projection pursuit index for comparing a sample of data against a multivariate normal reference distribution. It has also provided an analytical result for drawing \gD{} projections of the \pD{} ellipse corrsponding to the normal reference distribution. These combined provide new ways to visualise multivariate data, for this particular scenario.
+This paper has provided a new projection pursuit index for comparing a sample of data against a multivariate normal reference distribution. It has also provided an analytical result for drawing \gD{} projections of the \pD{} ellipse corresponding to the normal reference distribution. These combined provide new ways to visualise multivariate data, for this particular scenario.
 
 The work is related to outlier detection methods [see, @MAYRHOFER2023, for example], particularly those that use robust statistics, as illustrated in the weather example. Methods discussed in @directional-outlyingness and @donoho1982 describe detecting outlyingness using projections of the data. When these projections are collected and used as a large set, they define a high-dimensional confidence region of an indeterminate shape. There is no analytical definition. However, we could explore the data relative to the high-dimensional shapes using the same approach described in @sec-background. You would generate points on the surface of the irregular shape, overlay the data on this to visualise with a tour.
 
