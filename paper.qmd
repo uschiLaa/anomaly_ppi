@@ -646,23 +646,26 @@ labels <- data.frame(
         paste0("\n",X_km$cluster))
 )
 cluster_df <- as_tibble(X_km$cluster, rownames = "year") %>%
-  add_column(variable = "num_precp_01")
+  add_column(variable = "clust")
+weather_SCD_rescaled$phi <- cbind((rep(0, nrow(weather_SCD_rescaled$phi))), weather_SCD_rescaled$phi)
+weather_SCD_rescaled$x_original <- cbind((rep(0, nrow(weather_SCD_rescaled$x_original))), weather_SCD_rescaled$x_original)
 colnames(weather_SCD_rescaled$phi) <-
-  c("atmax", "atmin", 
-         "nsumm",
+  c(".", "atmx", "atmn", 
+         "nsm",
          "nheat", "p",
          "sunh",
          "nclear",
          "ncloud",
          "rh",
-         "rhmax" ,
-         "rhmin",
+         "rhmx" ,
+         "rhmn",
          "vwind",
          "vw60",
-         "vwmax",
-         "prec",
+         "vwmx",
+         "prc",
          "nprec")
-cluster_df$variable <- "nprec"
+
+cluster_df$variable <- "."
 p <- plot(weather_SCD_rescaled, type = "cell", n_digits = 0, continuous_rowname = 10, rotate_x = FALSE) +
   geom_text(data = cluster_df,
             mapping = aes(x = as.numeric(year),
@@ -691,7 +694,7 @@ ggsave("images/weather3.png", p, "png", bg = "white",
  
 
 
-Reproduction of the results from @MAYRHOFER2023, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment at the top.
+Reproduction of the results from @MAYRHOFER2023, showing which cells have been identified as outlying by their Shapley Cell Detector algorithm. Red cells indicate values higher than expected, blue cells values lower than expected. For years that have been identified as outliers in our approach we show the cluster assignment in the last row.
 :::
 
 ## Conclusion
