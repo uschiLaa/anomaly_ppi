@@ -370,8 +370,10 @@ generated using these steps:
 \end{enumerate}
 
 New observations can be visually compared with this ellipsoid by
-plotting them together using a tour. Figure~\ref{fig-ci} illustrates
-this process for \gD.
+plotting them together using a tour, making sure that any
+transformations used on the reference distribution are also applied
+during pre-processing. Figure~\ref{fig-ci} illustrates this process for
+\gD.
 
 \begin{figure}
 
@@ -524,11 +526,18 @@ the size of the ellipse corresponds to a selected probability.
 
 \subsection{Index specification}\label{index-specification}
 
-To define a measure of an interesting projection is to maximize the
-average Mahalanobis distance (Mahalanobis 1936) in the projection for a
-subset of points, \(W\). The set of points could be chosen in different
-ways, but the default is those that are outside the specified ellipsoid
-in \pD{},
+Mahalanobis distance (Mahalanobis 1936) measures the distance from the
+center \(\mathbfit{\mu}\) in units of standard deviations, and is
+computed using the variance-covariance matrix \(\Sigma\).
+
+\begin{equation}
+d_M (\mathbfit{x}) = \sqrt{(\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T}
+\end{equation}
+
+To define a measure of an interesting projection we propose to use the
+average Mahalanobis distance in the projection, for a subset of points,
+\(W\). The set of points could be chosen in different ways, but the
+default is those that are outside the specified ellipsoid in \pD{},
 \(W = \{\mathbfit{x}: (\mathbfit{x}-\mathbfit{\mu}) \Sigma^{-1}(\mathbfit{x}-\mathbfit{\mu})^T > c^2\}\).
 Alternatives could be to select a set of observations with the largest
 Mahalanobis distance, manually select observations or possibly a group
@@ -548,14 +557,16 @@ in finding this average direction. However, if the observations have
 very different departures from the norm, it may be useful to break them
 into groups, and separately optimize on these subsets. One could
 consider clustering these observations using angular distance to find
-groups of observations that have similar directions of departure.
+groups of observations that have similar directions of departure. This
+is illustrated in the second example, see Section
+Section~\ref{sec-weather}.
 
 \section{Implementation}\label{sec-implementation}
 
 This is implemented in the \texttt{tourr} (Wickham et al. 2011, 2024)
 package, where the projected ellipsoid can be drawn for each projection.
 The guided tour will take arguments specifying the data, and the null
-variance-covariance matrix.
+variance-covariance matrix, as shown in the example code.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -565,6 +576,11 @@ variance-covariance matrix.
   \AttributeTok{axes =} \StringTok{"bottomleft"}\NormalTok{, }\AttributeTok{half\_range=}\DecValTok{5}\NormalTok{, }\AttributeTok{center=}\ConstantTok{FALSE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+A random projection as well as the final view after optimization are
+shown in Figure Figure~\ref{fig-anomaly}. The optimal projection (b) can
+be used to understand what combination of variables is driving the
+difference from the reference distribution.
 
 \begin{figure}
 
@@ -601,6 +617,13 @@ the p-D ellipse. The optimal projection uses mostly variables
 where the sample most differs from the norm.}
 
 \end{figure}%
+
+To optimize the index any optimization algorithm implemented in the
+\texttt{tourr} package can be used. The focus here is on the final
+projection identified, and direct interpretation of index values is not
+considered. It may however be interesting to compare different
+optimization strategies and compare the index values along the
+optimization paths, as available in Zhang et al. (2021).
 
 \section{Examples}\label{sec-examples}
 
@@ -677,25 +700,6 @@ provided for the project were all recorded on women. We see that this
 sample has slightly lower ALT and ALP, which is consistent with what is
 reported in Lala, Zubair, and Minter (2023).
 
-The second example shows a longitudinal record of a single patient,
-measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
-time order. The projection corresponds to the maximum from a
-projection-pursuit guided tour using the anomaly index:
-
-\[
-P = \left[ \begin{array}{rr}
-            0.371 & -0.128 \\
-            -0.388 & 0.732 \\
-            0.140 & 0.599 \\
-            -0.832 & -0.297 
-            \end{array} \right]
-\]
-
-From the axes representation in Figure~\ref{fig-liver} (b) of this
-projection, we can see that the direction that profile extends is
-primarily contrasting ALT (fourth row) and ALP (third row). This is
-consistent with aging, where ALP increases and ALT decreases.
-
 \begin{figure}
 
 \begin{minipage}{0.50\linewidth}
@@ -731,8 +735,26 @@ ages, the level of ALP increases and ALT decreases.}
 
 \end{figure}%
 
-\subsection{Robust statistics: weather
-extremes}\label{robust-statistics-weather-extremes}
+The second example shows a longitudinal record of a single patient,
+measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
+time order. The projection corresponds to the maximum from a
+projection-pursuit guided tour using the anomaly index:
+
+\[
+P = \left[ \begin{array}{rr}
+            0.371 & -0.128 \\
+            -0.388 & 0.732 \\
+            0.140 & 0.599 \\
+            -0.832 & -0.297 
+            \end{array} \right]
+\]
+
+From the axes representation in Figure~\ref{fig-liver} (b) of this
+projection, we can see that the direction that profile extends is
+primarily contrasting ALT (fourth row) and ALP (third row). This is
+consistent with aging, where ALP increases and ALT decreases.
+
+\subsection{Robust statistics: weather extremes}\label{sec-weather}
 
 This example is motivated by the weather data example from Mayrhofer and
 Filzmoser (2023). We illustrate using the anomaly index to compare
@@ -829,24 +851,24 @@ all points that we have identified as outliers using the
 
 For example we see that cluster 4 contains the years 1962 and 1996, and
 for these two years the result from Mayrhofer and Filzmoser (2023) also
-indicates unusually low values for the minimum teperature, while there
-is disagreement between outlyingness in other variables. Note that
+indicates unusually low values for the minimum teperature (atmn), while
+there is disagreement between outlyingness in other variables. Note that
 compared to the years 1965 and 1966 they have unusually low minimum
-temperature while having average values for the number of days with
-maximum temperature above 25°C, and this contrast is also captured in
-the projection.
+temperature (atmn) while having average values for the number of days
+with maximum temperature above 25°C (nsm), and this contrast is also
+captured in the projection.
 
 When looking at the overall picture (Figure~\ref{fig-weather} (a)), we
 can see that the linear projection is showing the difference between
-minimum and maximum temperature, which is where clusters are outlying in
-different directions. The direction of cluster 1 is where the average
-maximum temperature is unusually higher compared to the minimum
-temperature, while clusters 3 corresponds to years where the minimum
-temperature is unusually close to the maximum temperature. This combined
-information cannot be resolved with the cell detection algorithm, but we
-see that for example the most recent years (cluster 3) were tagged for
-having unusually high values for both the minimum and the maximum
-temperature.
+minimum (atmn) and maximum temperature (atmx), which is where clusters
+are outlying in different directions. The direction of cluster 1 is
+where the average maximum temperature (atmx) is unusually higher
+compared to the minimum temperature (atmn), while clusters 3 corresponds
+to years where the minimum temperature is unusually close to the maximum
+temperature. This combined information cannot be resolved with the cell
+detection algorithm, but we see that for example the most recent years
+(cluster 3) were tagged for having unusually high values for both the
+minimum (atmn) and the maximum temperature (atmx).
 
 \begin{figure}
 
@@ -858,10 +880,11 @@ temperature.
 
 \caption{\label{fig-shapley}Reproduction of the results from Mayrhofer
 and Filzmoser (2023), showing which cells have been identified as
-outlying by their Shapley Cell Detector algorithm. Red cells indicate
-values higher than expected, blue cells values lower than expected. For
-years that have been identified as outliers in our approach we show the
-cluster assignment in the last row.}
+outlying by their Shapley Cell Detector algorithm (Mayrhofer and
+Filzmoser 2023). Red cells indicate values higher than expected, blue
+cells values lower than expected. For years that have been identified as
+outliers in our approach we show the cluster assignment in the last
+row.}
 
 \end{figure}%
 
@@ -1063,6 +1086,12 @@ Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011.
 Wickham, Hadley, Dianne Cook, Nicholas Spyrison, Ursula Laa, H. Sherry
 Zhang, and Stuart Lee. 2024. \emph{Tour Methods for Multivariate Data
 Visualisation}. \url{https://CRAN.R-project.org/package=tourr}.
+
+\bibitem[\citeproctext]{ref-ferrn}
+Zhang, H. Sherry, Dianne Cook, Ursula Laa, Nicolas Langrené, and
+Patricia Menéndez. 2021. {``Visual Diagnostics for Constrained
+Optimisation with Application to Guided Tours.''} \emph{The R Journal}
+13 (2): 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
 
 \end{CSLReferences}
 
