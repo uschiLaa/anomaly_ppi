@@ -209,6 +209,7 @@ p1 + p2 + p3 + p4 + plot_layout(ncol=4)
 ```{r}
 #| eval: false
 #| echo: false
+# This code generates Fig 2: ellipse vs sample
 set.seed(1158)
 norm_vc <- diag(1, 4, 4)
 norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
@@ -366,6 +367,7 @@ This is implemented in the `tourr` [@tourr;@tourr-cran] package, where the proje
 ```{r}
 #| eval: false
 #| echo: false
+# Code to generate data for Fig 3
 set.seed(929)
 vc_null <- matrix(rep(0.5, 5*5), ncol=5)
 diag(vc_null) <- 1
@@ -379,6 +381,17 @@ m_samp <- c(0, 0, 0, 1.9, 2.3)
 samp <- as.data.frame(rmvn(6, 
                            mn = m_samp, 
                            vc = vc_samp))
+set.seed(913) 
+render_gif(samp, 
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=vc_null), 
+           display_xy(ellipse=vc_null, 
+                      axes = "bottomleft", 
+                      half_range=5, center=FALSE),
+           gif_file = "gifs/anomaly.gif",
+           frames = 500,
+           width = 400,
+           height = 400)
 ```
 
 
@@ -395,9 +408,9 @@ A random projection as well as the final view after optimization are shown in Fi
 
 ::: {#fig-anomaly layout-ncol=2}
 
-![Random projection](images/anomaly1.png){#fig-anomaly1 width=300 align="center"}
+![Random projection](images/anomaly1.png){#fig-anomaly1 width=250 align="center"}
  
-![Optimal projection](images/anomaly2.png){#fig-anomaly2 width=300 align="center"}
+![Optimal projection](images/anomaly2.png){#fig-anomaly2 width=250 align="center"}
 
 Two projections of simulated example data corresponding to the sample code: (a) random projection where sample is inside the 2-D ellipse, (b) optimal projection from index, showing most of the sample outside. A red cross indicates that the point is outside the p-D ellipse. The optimal projection uses mostly variables $x_4, x_5$, which is expected because these are the two directions where the sample most differs from the norm.
 :::
@@ -433,11 +446,30 @@ liver_stats |>
   )
 ```
 
-These measurements are also likely correlated, based on guidance like the *ratio of AST to ALT of 2:1 indicates possible alcohol abuse*. Although this was provided by the pharmaceutical company, correlation between these measurements for normal patients is not readily available. When a correlation matrix for normal patients is provided this would allow construction of the null ellipse upon which to examine new samples.
+These measurements are also likely correlated, based on guidance like the *ratio of AST to ALT of 2:1 indicates possible alcohol abuse*. When a correlation matrix for normal patients is provided the null ellipse can be computed to be used to examine new samples.
 
 ```{r}
 #| eval: false
 #| echo: false
+set.seed(1158)
+norm_vc <- diag(1, 4, 4)
+norm_vc[upper.tri(norm_vc) == TRUE] <- sample(c(0.3, 0.4, 0.5), 6, replace=T)
+for (i in 1:3)
+  for (j in (i+1):4)
+    norm_vc[j, i] <- norm_vc[i, j]
+colnames(norm_vc) <- c("GGT", "AST", "ALP", "ALT")
+norm_samp <- rmvnorm(500, sigma=as.matrix(norm_vc))
+colnames(norm_samp) <- c("GGT", "AST", "ALP", "ALT")
+
+set.seed(217)
+women_vc <- norm_vc
+women_vc[1,4] <- 0.5
+women_vc[4,1] <- 0.5
+women <- rmvnorm(16, mean=c(0.3, -0.3, -1.5, -1.7),
+                 sigma = women_vc)
+colnames(women) <- c("GGT", "AST", "ALP", "ALT")
+women <- as.data.frame(women)
+
 animate_xy(women,            
            ellipse=norm_vc, 
            axes = "bottomleft", 
@@ -450,6 +482,17 @@ animate_xy(women, guided_anomaly_tour(anomaly_index(),
            axes = "bottomleft", 
            half_range=5, 
            center=FALSE)
+set.seed(929) 
+render_gif(women,  
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=norm_vc), 
+           display_xy(ellipse=norm_vc, 
+                      axes = "bottomleft", 
+                      half_range=5, center=FALSE),
+           gif_file = "gifs/women.gif",
+           frames = 500,
+           width = 400,
+           height = 400)
   
 set.seed(1208)
 pt1 <- tibble(GGT = rnorm(5, mean=1.3, sd=0.15),
@@ -464,21 +507,36 @@ animate_xy(pt1, guided_anomaly_tour(anomaly_index(),
            center=FALSE,
            edges = matrix(c(1:4, 2:5), byrow=FALSE, ncol=2),
            obs_labels = c("45", "50", "55", "65", "70"))
+set.seed(951) #945
+render_gif(pt1,  
+           guided_anomaly_tour(anomaly_index(),
+                               ellipse=norm_vc), 
+           display_xy(ellipse=norm_vc, 
+                      axes = "bottomleft", 
+                      half_range=5, center=FALSE,
+                      edges = matrix(c(1:4, 2:5), 
+                                     byrow=FALSE, ncol=2),
+                      obs_labels = c("45", "50", "55", "65", "70")),
+           gif_file = "gifs/w_long.gif",
+           frames = 500,
+           width = 400,
+           height = 400)
 ```
 
-@fig-liver illustrates two examples. The first is similar to the consulting project. A sample of liver test scores for new patients was provided in order to examine their values relative to the normal range. Here only four tests are used, GGT, AST, ALP, ALT. Plot (a) shows a projection of this sample relative to the normal range. Three of the patients are outside the confidence ellipse but all of the patients are located away from the mean. What has been typical in the past is to compute normal values based on tests of healthy young males. The samples provided for the project were all recorded on women. We see that this sample has slightly lower ALT and ALP, which is consistent with what is reported in @lib-med-liver-norms.
+@fig-liver illustrates two examples. The first is similar to the consulting project. A sample of liver test scores for new patients was provided in order to examine their values relative to the normal range. Here only four tests are used, GGT, AST, ALP, ALT. Plot (a) shows a projection of this sample relative to the normal range, using the anomaly index guided tour. Some of the patients are outside the 4D confidence ellipse but all of the patients are off center, located away from the mean. What has been typical in the past is to compute normal values based on tests of healthy young males. Although this example is simulated, it matches what was learned during the project, that the samples examined were all recorded on women, and they were systematically different from the normal. <!--We see that this sample has slightly lower ALT and ALP, which is consistent with what is reported in @lib-med-liver-norms.-->
 
 ::: {#fig-liver layout-ncol=2}
 
-![Sample of female patients](images/liver1.png){#fig-liver1 width=300 align="center"}
+![Sample of female patients](images/liver1.png){#fig-liver1 width=250 align="center"}
  
-![Longitudinal profile of an aging patient](images/liver2.png){#fig-liver2 width=300 align="center"}
+![Longitudinal profile of an aging patient](images/liver2.png){#fig-liver2 width=250 align="center"}
 
-Two projections of simulated example data corresponding to common liver tests: (a) sample of female patients, (b) longitudinal test results for a single patient. Red cross indicates observation is outside the 4-D confidence ellipse. The female patients tend to have lower ALP and ALT than the normal range. As the patient ages, the level of ALP increases and ALT decreases.
+Two projections of simulated example data corresponding to common liver tests: (a) sample of female patients, (b) longitudinal test results for a single patient. Red cross indicates observation is outside the 4-D confidence ellipse. The female patients, the whole group (a), are systematically different from the normal range. As the patient ages (b), the level of ALP increases and ALT decreases.
 :::
 
-The second example shows a longitudinal record of a single patient, measured at ages 45, 50, 55, 65 and 70. The lines connect the records in time order. The projection corresponds to the maximum from a projection-pursuit guided tour using the anomaly index:
+The second example shows a longitudinal record of a single patient, measured at ages 45, 50, 55, 65 and 70. The lines connect the records in time order. The projection corresponds to the maximum from a projection-pursuit guided tour using the anomaly index. 
 
+<!--
 $$
 P = \left[ \begin{array}{rr}
             0.371 & -0.128 \\
@@ -487,10 +545,11 @@ P = \left[ \begin{array}{rr}
             -0.832 & -0.297 
             \end{array} \right]
 $$
+-->
 
-From the axes representation in @fig-liver (b) of this projection, we can see that the direction that profile extends is primarily contrasting ALT (fourth row) and ALP (third row). This is consistent with aging, where ALP increases and ALT decreases. 
+From the axes representation in @fig-liver (b) of this projection, we can see that the direction that profile extends is primarily contrasting ALT (fourth row) and ALP (third row). This is consistent with aging, where ALP increases and ALT decreases. Although this is simulated data, it matches what was observed in the clinical data that ALP and ALT test scores systematically change with age.
 
-
+These two examples illustrate how visualizing the data using the anomaly guided tour can help to understand differences between groups of correlated test scores.
 
 ### Robust statistics: weather extremes {#sec-weather}
 

@@ -604,7 +604,7 @@ difference from the reference distribution.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly1.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/anomaly1.png}
 
 }
 
@@ -616,7 +616,7 @@ difference from the reference distribution.
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/anomaly2.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/anomaly2.png}
 
 }
 
@@ -698,23 +698,21 @@ max & 50 & 80 & 20 & 44 & 30 & 120 & 40 \\
 
 These measurements are also likely correlated, based on guidance like
 the \emph{ratio of AST to ALT of 2:1 indicates possible alcohol abuse}.
-Although this was provided by the pharmaceutical company, correlation
-between these measurements for normal patients is not readily available.
-When a correlation matrix for normal patients is provided this would
-allow construction of the null ellipse upon which to examine new
-samples.
+When a correlation matrix for normal patients is provided the null
+ellipse can be computed to be used to examine new samples.
 
 Figure~\ref{fig-liver} illustrates two examples. The first is similar to
 the consulting project. A sample of liver test scores for new patients
 was provided in order to examine their values relative to the normal
 range. Here only four tests are used, GGT, AST, ALP, ALT. Plot (a) shows
-a projection of this sample relative to the normal range. Three of the
-patients are outside the confidence ellipse but all of the patients are
-located away from the mean. What has been typical in the past is to
-compute normal values based on tests of healthy young males. The samples
-provided for the project were all recorded on women. We see that this
-sample has slightly lower ALT and ALP, which is consistent with what is
-reported in Lala, Zubair, and Minter (2023).
+a projection of this sample relative to the normal range, using the
+anomaly index guided tour. Some of the patients are outside the 4D
+confidence ellipse but all of the patients are off center, located away
+from the mean. What has been typical in the past is to compute normal
+values based on tests of healthy young males. Although this example is
+simulated, it matches what was learned during the project, that the
+samples examined were all recorded on women, and they were
+systematically different from the normal.
 
 \begin{figure}
 
@@ -722,7 +720,7 @@ reported in Lala, Zubair, and Minter (2023).
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver1.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/liver1.png}
 
 }
 
@@ -734,7 +732,7 @@ reported in Lala, Zubair, and Minter (2023).
 
 \centering{
 
-\includegraphics[width=3.125in,height=\textheight,keepaspectratio]{images/liver2.png}
+\includegraphics[width=2.60417in,height=\textheight,keepaspectratio]{images/liver2.png}
 
 }
 
@@ -745,30 +743,27 @@ reported in Lala, Zubair, and Minter (2023).
 \caption{\label{fig-liver}Two projections of simulated example data
 corresponding to common liver tests: (a) sample of female patients, (b)
 longitudinal test results for a single patient. Red cross indicates
-observation is outside the 4-D confidence ellipse. The female patients
-tend to have lower ALP and ALT than the normal range. As the patient
-ages, the level of ALP increases and ALT decreases.}
+observation is outside the 4-D confidence ellipse. The female patients,
+the whole group (a), are systematically different from the normal range.
+As the patient ages (b), the level of ALP increases and ALT decreases.}
 
 \end{figure}%
 
 The second example shows a longitudinal record of a single patient,
 measured at ages 45, 50, 55, 65 and 70. The lines connect the records in
 time order. The projection corresponds to the maximum from a
-projection-pursuit guided tour using the anomaly index:
-
-\[
-P = \left[ \begin{array}{rr}
-            0.371 & -0.128 \\
-            -0.388 & 0.732 \\
-            0.140 & 0.599 \\
-            -0.832 & -0.297 
-            \end{array} \right]
-\]
+projection-pursuit guided tour using the anomaly index.
 
 From the axes representation in Figure~\ref{fig-liver} (b) of this
 projection, we can see that the direction that profile extends is
 primarily contrasting ALT (fourth row) and ALP (third row). This is
-consistent with aging, where ALP increases and ALT decreases.
+consistent with aging, where ALP increases and ALT decreases. Although
+this is simulated data, it matches what was observed in the clinical
+data that ALP and ALT test scores systematically change with age.
+
+These two examples illustrate how visualizing the data using the anomaly
+guided tour can help to understand differences between groups of
+correlated test scores.
 
 \subsection{Robust statistics: weather extremes}\label{sec-weather}
 
