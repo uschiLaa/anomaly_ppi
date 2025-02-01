@@ -1,1 +1,1 @@
-# anomaly_ppi
+# Paper describing the anomaly index
