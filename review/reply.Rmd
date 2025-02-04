@@ -31,7 +31,7 @@ We thank the Associate editor and anonymous reviewers for the feedback on the pa
 
 4. The methodology is well-explained, but providing more details on the computational aspects and potential limitations would improve reproducibility. Clarification on how to obtain and interpret the "index" results is needed. Offering more detailed descriptions of the algorithms and their implementation would aid in understanding. A deeper discussion of the practical implications of these results would add valuable context.
 
-\textcolor{purple}{We have extended the implementation section to mention the options for optimization of the index, and have included a reference for the ferrn package that can be used to investigate index values and to compare different optimization strategies. All implementations are available in CRAN packages and the code to reproduce the examples are available on GitHub for full reproducibility.}
+\textcolor{purple}{We have extended the implementation section to mention the options for optimization of the index, and have included a reference for the ferrn package that can be used to investigate index values and to compare different optimization strategies. All implementations are available in CRAN packages and the code to reproduce the examples is available on GitHub for full reproducibility.}
 
 ## Reviewer 2
 
@@ -132,6 +132,6 @@ Page 14 line 48: Is Shapley Cell Detector algorithm defined in Mayrofer and Filz
 
 Page 15 line 19: In the conclusion, you mention that your work relates to outlier detection methods, particularly those using robust statistics. However, this important point is not clearly explained in your paper until the examples. It is essential to clarify this relationship earlier in the paper, before the examples, to provide context for the reader. Additionally, in the conclusion, you include some references that could be incorporated earlier in the text. This would help justify the differences between your method and existing ones, enhancing the overall clarity and depth of your discussion.
 
-\textcolor{purple}{We have extended the introduction somewhat to include references to outlier detection in the context of linear dimension reduction. The additional references in the conclusions show potential generalizations of the work connecting to other directionsin outlier detection.}
+\textcolor{purple}{We have extended the introduction somewhat to include references to outlier detection in the context of linear dimension reduction. The additional references in the conclusions show potential generalizations of the work connecting to other directions in outlier detection.}
 
 
